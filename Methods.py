@@ -26,6 +26,7 @@
 from Registry import Registry
 from Registry import RegistryParse
 import binascii
+import struct
 import sys
 
 
@@ -40,13 +41,25 @@ def ReadSingleReg(hive, Path, Key):
         return "Empty"
 
 def ReadAllReg(Hive, Path):
+
     reg = Registry.Registry(Hive)
     try:
         key = reg.open(Path)
     except Registry.RegistryKeyNotFoundException:
         print "Couldn't find %s..." % Path
         sys.exit(-1)
+    try:
+        for value in [v for v in key.values()]:
+            try:
+              #  if v.value_type() == Registry.RegSZ or v.value_type() == Registry.RegExpandSZ or v.value_type() == Registry.RegBin:
+                    print "%s: %s: %s" % (value.name(), value.value(), value.value_type_str())
+            except:
+                print value.name() + ":  " + str(binascii.b2a_hex(value.raw_data()))
 
-    for value in [v for v in key.values() if v.value_type() == Registry.RegSZ or v.value_type() == Registry.RegExpandSZ or v.value_type() == Registry.RegBin]:
-            print "%s: %s: %s" % (value.name(), value.value(), value.value_type_str())
+    except:
+         print"Error"
+
+
+
+
 

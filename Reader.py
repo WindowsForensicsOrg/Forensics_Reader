@@ -41,6 +41,6 @@ def main():
     print "Mounted Devices:"
     ReadAllReg(path + r"\SYSTEM", "MountedDevices")
     print "Current controlset: %s" % forensicating.control_set_check(path + r'\SYSTEM')
-    print os_settings(path + r'\SYSTEM', path + r'\SOFTWARE')
-
-main()
+    #print os_settings(path + r'\SYSTEM', path + r'\SOFTWARE')
+if __name__ == '__main__':
+    main()

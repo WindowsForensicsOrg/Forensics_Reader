@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 #  Methods.py
-#
+# 0
 #  Copyright 2016 ras <sansforensics@siftworkstation>
 #
 #  This program is free software; you can redistribute it and/or modify
@@ -23,11 +23,10 @@
 #
 #!/usr/bin/python
 #!/usr/bin/python
-from Registry import Registry
-from Registry import RegistryParse
 import binascii
-import struct
 import sys
+
+from Registry import Registry
 
 
 def ReadSingleReg(hive, Path, Key):
@@ -40,8 +39,10 @@ def ReadSingleReg(hive, Path, Key):
     except:
         return "Empty"
 
-def ReadAllReg(Hive, Path):
 
+def ReadAllReg(Hive, Path, db, cursor):
+    i = 0
+    # result= []
     reg = Registry.Registry(Hive)
     try:
         key = reg.open(Path)
@@ -52,14 +53,15 @@ def ReadAllReg(Hive, Path):
         for value in [v for v in key.values()]:
             try:
               #  if v.value_type() == Registry.RegSZ or v.value_type() == Registry.RegExpandSZ or v.value_type() == Registry.RegBin:
-                    print "%s: %s: %s" % (value.name(), value.value(), value.value_type_str())
-            except:
-                print value.name() + ":  " + str(binascii.b2a_hex(value.raw_data()))
+              cursor.execute('''INSERT INTO users(Id, Name, Url) VALUES(?,?,?)''', (i, value.name(), value.value()))
 
+              i += 1
+            except:
+                cursor.execute('''INSERT INTO users(Id, Name, Url) VALUES(?,?,?)''',
+                               (i, value.name(), str(binascii.b2a_hex(value.raw_data()))))
+                i += 1
+            db.commit()
     except:
          print"Error"
 
-
-
-
-
+    return db

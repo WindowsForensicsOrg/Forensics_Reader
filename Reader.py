@@ -23,24 +23,33 @@
 #
 # !/usr/bin/python
 # !/usr/bin/python
-import Methods
-import binascii
-import forensicating
-import sys
-from Registry import Registry
-from Registry import RegistryParse
-from Methods import ReadSingleReg
-from Methods import ReadAllReg
-from forensicating import *
-import sqlite3 as lite
+import sqlite3
+
+from Methods import *
 
 path = r"C:\Users\DKRRK\PycharmProjects\Samples"
+db = sqlite3.connect("db11")
 def main():
+
    # print "Typed URL's"
-   # print str(ReadAllReg(path + r"\NTUSER.DAT", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths"))
-    print "Mounted Devices:"
-    ReadAllReg(path + r"\SYSTEM", "MountedDevices")
-    print "Current controlset: %s" % forensicating.control_set_check(path + r'\SYSTEM')
-    #print os_settings(path + r'\SYSTEM', path + r'\SOFTWARE')
+   cursor = db.cursor()
+   cursor.execute('''CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT, URL TEXT)''')
+   ReadAllReg(path + r"\NTUSER.DAT", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", db, cursor)
+
+   cursor.execute('''SELECT * FROM users''')
+   user1 = cursor.fetchone()  # retrieve the first row
+   #  print(user1[0]) #Print the first column retrieved(user's name)
+   all_rows = cursor.fetchall()
+   for row in all_rows:
+       # row[0] returns the first column in the query (name), row[1] returns email column.
+       print('{0} : {1}, {2}'.format(row[0], row[1], row[2]))
+       # print "Mounted Devices:"
+       # result2 = ReadAllReg(path + r"\SYSTEM", "MountedDevices", db)
+       # result3 = ReadAllReg(path + r"\SOFTWARE", "Microsoft\\Windows NT\\CurrentVersion", db)
+       # print "Current controlset: %s" % forensicating.control_set_check(path + r'\SYSTEM')
+       # print os_settings(path + r'\SYSTEM', path + r'\SOFTWARE')
+       # printList(result1)
+       # printList(result3)
+   db.close()
 if __name__ == '__main__':
     main()

@@ -29,7 +29,7 @@ import sys
 from Registry import Registry
 
 
-def ReadSingleReg(hive, Path, Key):
+def ReadSingleReg(hive, Path, Key, TableName):
     with open(hive, 'rb') as h:
         r = Registry.Registry(h)
     try:
@@ -40,7 +40,7 @@ def ReadSingleReg(hive, Path, Key):
         return "Empty"
 
 
-def ReadAllReg(Hive, Path, db, cursor):
+def ReadAllReg(Hive, Path, db, cursor, TableName):
     i = 0
     # result= []
     reg = Registry.Registry(Hive)
@@ -53,11 +53,12 @@ def ReadAllReg(Hive, Path, db, cursor):
         for value in [v for v in key.values()]:
             try:
               #  if v.value_type() == Registry.RegSZ or v.value_type() == Registry.RegExpandSZ or v.value_type() == Registry.RegBin:
-              cursor.execute('''INSERT INTO users(Id, Name, Url) VALUES(?,?,?)''', (i, value.name(), value.value()))
+              cursor.execute('''SERT INTO %s  (Id, Name, Url) VALUES(?,?,?)''' % TableName,
+                             (i, value.name(), value.value()))
 
               i += 1
             except:
-                cursor.execute('''INSERT INTO users(Id, Name, Url) VALUES(?,?,?)''',
+                cursor.execute('''INSERT INTO %s (Id, Name, Url) VALUES(?,?,?)''' % TableName,
                                (i, value.name(), str(binascii.b2a_hex(value.raw_data()))))
                 i += 1
             db.commit()

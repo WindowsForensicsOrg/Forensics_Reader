@@ -31,25 +31,32 @@ path = r"C:\Users\DKRRK\PycharmProjects\Samples"
 db = sqlite3.connect(":memory:")
 def main():
 
-   # print "Typed URL's"
-   cursor = db.cursor()
-   cursor.execute('''CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT, URL TEXT)''')
-   ReadAllReg(path + r"\NTUSER.DAT", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", db, cursor)
 
-   cursor.execute('''SELECT * FROM users''')
-   user1 = cursor.fetchone()  # retrieve the first row
-   #  print(user1[0]) #Print the first column retrieved(user's name)
-   all_rows = cursor.fetchall()
-   for row in all_rows:
-       # row[0] returns the first column in the query (name), row[1] returns email column.
-       print('{0} : {1}, {2}'.format(row[0], row[1], row[2]))
-       # print "Mounted Devices:"
-       # result2 = ReadAllReg(path + r"\SYSTEM", "MountedDevices", db)
-       # result3 = ReadAllReg(path + r"\SOFTWARE", "Microsoft\\Windows NT\\CurrentVersion", db)
-       # print "Current controlset: %s" % forensicating.control_set_check(path + r'\SYSTEM')
-       # print os_settings(path + r'\SYSTEM', path + r'\SOFTWARE')
-       # printList(result1)
-       # printList(result3)
+   cursor = db.cursor()
+   cursor.execute('''CREATE TABLE OsInfo(id INTEGER PRIMARY KEY, name TEXT, URL TEXT)''')
+   Typed_Urls(cursor)
    db.close()
+
+
+def Typed_Urls(cursor):
+    TableName = "OsInfo"
+    print "Typed URL's"
+    ReadAllReg(path + r"\NTUSER.DAT", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", db, cursor,
+               TableName)
+    cursor.execute('''SELECT * FROM %s''' % TableName)
+    all_rows = cursor.fetchall()
+    for row in all_rows:
+        print('{0} : {1}, {2}'.format(row[0], row[1], row[2]))
+
+
 if __name__ == '__main__':
     main()
+
+
+    # print "Mounted Devices:"
+    # result2 = ReadAllReg(path + r"\SYSTEM", "MountedDevices", db)
+    # result3 = ReadAllReg(path + r"\SOFTWARE", "Microsoft\\Windows NT\\CurrentVersion", db)
+    # print "Current controlset: %s" % forensicating.control_set_check(path + r'\SYSTEM')
+    # print os_settings(path + r'\SYSTEM', path + r'\SOFTWARE')
+    # printList(result1)
+    # printList(result3)

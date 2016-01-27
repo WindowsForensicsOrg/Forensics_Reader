@@ -34,19 +34,11 @@ def main():
 
    cursor = db.cursor()
    cursor.execute('''CREATE TABLE OsInfo(id INTEGER PRIMARY KEY, name TEXT, URL TEXT)''')
-   Typed_Urls(cursor)
+   Fetch_Info(db, path, cursor, "NTUSER.DAT", "OsInfo",
+              r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths")
    db.close()
 
 
-def Typed_Urls(cursor):
-    TableName = "OsInfo"
-    print "Typed URL's"
-    ReadAllReg(path + r"\NTUSER.DAT", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", db, cursor,
-               TableName)
-    cursor.execute('''SELECT * FROM %s''' % TableName)
-    all_rows = cursor.fetchall()
-    for row in all_rows:
-        print('{0} : {1}, {2}'.format(row[0], row[1], row[2]))
 
 
 if __name__ == '__main__':

@@ -40,7 +40,16 @@ def ReadSingleReg(hive, Path, Key, TableName):
         return "Empty"
 
 
-def ReadAllReg(Hive, Path, db, cursor, TableName):
+def Fetch_Info(db, path, cursor, HiveName, TableName, regPath):
+    print "Typed URL's"
+    ReadAllReg(cursor, path + "\\" + HiveName, TableName, regPath, db)
+    cursor.execute('''SELECT * FROM %s''' % TableName)
+    all_rows = cursor.fetchall()
+    for row in all_rows:
+        print('{0} : {1}, {2}'.format(row[0], row[1], row[2]))
+
+
+def ReadAllReg(cursor, Hive, TableName, Path, db):
     i = 0
     # result= []
     reg = Registry.Registry(Hive)
@@ -53,7 +62,7 @@ def ReadAllReg(Hive, Path, db, cursor, TableName):
         for value in [v for v in key.values()]:
             try:
               #  if v.value_type() == Registry.RegSZ or v.value_type() == Registry.RegExpandSZ or v.value_type() == Registry.RegBin:
-              cursor.execute('''SERT INTO %s  (Id, Name, Url) VALUES(?,?,?)''' % TableName,
+              cursor.execute('''INSERT INTO %s  (Id, Name, Url) VALUES(?,?,?)''' % TableName,
                              (i, value.name(), value.value()))
 
               i += 1

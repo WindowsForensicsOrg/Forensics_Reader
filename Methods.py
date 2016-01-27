@@ -21,57 +21,58 @@
 #  MA 02110-1301, USA.
 #
 #
-#!/usr/bin/python
-#!/usr/bin/python
+# !/usr/bin/python
+# !/usr/bin/python
 import binascii
-import sys
 
 from Registry import Registry
 
 
-def ReadSingleReg(hive, Path, Key, TableName):
-    with open(hive, 'rb') as h:
-        r = Registry.Registry(h)
+def ReadSingleReg(db, hive, path, regPath, Key, cursor, TableName, Category):
+    reg = Registry.Registry(path + "\\" + hive)
     try:
-            k = r.open(Path)
-            v = k.value(Key)
-            return v.value()
+        key = reg.open(regPath)
+    except Registry.RegistryKeyNotFoundException:
+        print "Couldn't find %s..." % regPath
+        pass
+    try:
+        k = reg.open(regPath)
+        v = k.value(Key)
+        cursor.execute('''INSERT INTO %s  (Name, Value, Category) VALUES(?,?,?)''' % TableName, (v.name(), v.value(), Category))
+        cursor.execute('''SELECT * FROM %s''' % TableName)
+        all_rows = cursor.fetchall()
+        for row in all_rows:
+            print('{0} : {1}, {2}'.format(row[0], row[1], row[2]))
+        return db
     except:
-        return "Empty"
+        print "Error in ReadSingleReg"
+        return db
 
 
-def Fetch_Info(db, path, cursor, HiveName, TableName, regPath):
+def Fetch_Info(db, path, cursor, HiveName, TableName, regPath, Category):
     print "Typed URL's"
-    ReadAllReg(cursor, path + "\\" + HiveName, TableName, regPath, db)
+    ReadAllReg(cursor, path + "\\" + HiveName, TableName, regPath, db, Category)
     cursor.execute('''SELECT * FROM %s''' % TableName)
     all_rows = cursor.fetchall()
     for row in all_rows:
         print('{0} : {1}, {2}'.format(row[0], row[1], row[2]))
 
 
-def ReadAllReg(cursor, Hive, TableName, Path, db):
-    i = 0
-    # result= []
+def ReadAllReg(cursor, Hive, TableName, regPath, db, Category):
     reg = Registry.Registry(Hive)
     try:
-        key = reg.open(Path)
+        key = reg.open(regPath)
     except Registry.RegistryKeyNotFoundException:
-        print "Couldn't find %s..." % Path
-        sys.exit(-1)
+        print "Couldn't find %s..." % regPath
+        pass
     try:
         for value in [v for v in key.values()]:
             try:
-              #  if v.value_type() == Registry.RegSZ or v.value_type() == Registry.RegExpandSZ or v.value_type() == Registry.RegBin:
-              cursor.execute('''INSERT INTO %s  (Id, Name, Url) VALUES(?,?,?)''' % TableName,
-                             (i, value.name(), value.value()))
-
-              i += 1
+                #  if v.value_type() == Registry.RegSZ or v.value_type() == Registry.RegExpandSZ or v.value_type() == Registry.RegBin:
+                cursor.execute('''INSERT INTO %s  (Name, Value, Category) VALUES(?,?,?)''' % TableName, (value.name(), value.value(), Category))
             except:
-                cursor.execute('''INSERT INTO %s (Id, Name, Url) VALUES(?,?,?)''' % TableName,
-                               (i, value.name(), str(binascii.b2a_hex(value.raw_data()))))
-                i += 1
-            db.commit()
+                cursor.execute('''INSERT INTO %s (Name, Value, Category) VALUES(?,?,?)''' % TableName,(value.name(), str(binascii.b2a_hex(value.raw_data())), Category))
     except:
-         print"Error"
+        print"Error in ReadAllReg"
 
     return db

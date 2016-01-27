@@ -27,19 +27,25 @@ import sqlite3
 
 from Methods import *
 
-path = r"C:\Users\DKRRK\PycharmProjects\Samples"
-db = sqlite3.connect(":memory:")
+path = r"D:\Google Drive\Python\Samples"
+OSdb = sqlite3.connect(":memory:")
+Userdb = sqlite3.connect(":memory:")
+UserCursor = Userdb.cursor()
+cursorOS = OSdb.cursor()
+cursorOS.execute('''CREATE TABLE OsInfo(id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT)''')
+UserCursor.execute('''CREATE TABLE UsersInfo(id INTEGER PRIMARY KEY, name TEXT, Value TEXT, Category TEXT)''')
+
+
 def main():
 
-
-   cursor = db.cursor()
-   cursor.execute('''CREATE TABLE OsInfo(id INTEGER PRIMARY KEY, name TEXT, URL TEXT)''')
-   Fetch_Info(db, path, cursor, "NTUSER.DAT", "OsInfo",
-              r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths")
-   db.close()
+   Fetch_Info(Userdb, path, UserCursor, "NTUSER.DAT", "UsersInfo", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Typed Urls") #Typed Paths
+   Userdb.commit()
+   ReadSingleReg(OSdb,  "SYSTEM", path, "Select", "Current", cursorOS,"OsInfo", "CurrentControlSet") #CurrentControlSet
+   OSdb.commit()
 
 
-
+   OSdb.close()
+   Userdb.close()
 
 if __name__ == '__main__':
     main()

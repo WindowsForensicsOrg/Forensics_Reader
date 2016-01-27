@@ -28,7 +28,7 @@ import sqlite3
 from Methods import *
 
 path = r"C:\Users\DKRRK\PycharmProjects\Samples"
-db = sqlite3.connect("db11")
+db = sqlite3.connect(":memory:")
 def main():
 
    # print "Typed URL's"

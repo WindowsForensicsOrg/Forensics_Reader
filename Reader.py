@@ -37,15 +37,15 @@ UserCursor.execute('''CREATE TABLE UsersInfo(id INTEGER PRIMARY KEY, name TEXT, 
 
 
 def main():
+    Fetch_Info(Userdb, path, UserCursor, "NTUSER.DAT", "UsersInfo",
+               r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Typed Urls")  # Typed Paths
+    Userdb.commit()
+    ReadSingleReg(OSdb, "SYSTEM", path, "Select", "Current", cursorOS, "OsInfo",
+                  "CurrentControlSet")  # CurrentControlSet
+    OSdb.commit()
 
-   Fetch_Info(Userdb, path, UserCursor, "NTUSER.DAT", "UsersInfo", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Typed Urls") #Typed Paths
-   Userdb.commit()
-   ReadSingleReg(OSdb,  "SYSTEM", path, "Select", "Current", cursorOS,"OsInfo", "CurrentControlSet") #CurrentControlSet
-   OSdb.commit()
-
-
-   OSdb.close()
-   Userdb.close()
+    OSdb.close()
+    Userdb.close()
 
 if __name__ == '__main__':
     main()

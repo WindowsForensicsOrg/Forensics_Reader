@@ -69,9 +69,12 @@ def ReadAllReg(cursor, Hive, TableName, regPath, db, Category):
         for value in [v for v in key.values()]:
             try:
                 #  if v.value_type() == Registry.RegSZ or v.value_type() == Registry.RegExpandSZ or v.value_type() == Registry.RegBin:
-                cursor.execute('''INSERT INTO %s  (Name, Value, Category) VALUES(?,?,?)''' % TableName, (value.name(), value.value(), Category))
+                cursor.execute('''INSERT INTO %s  (Name, Value, Category) VALUES(?,?,?)''' % TableName,
+                               [value.name(), value.value(), Category])
             except:
-                cursor.execute('''INSERT INTO %s (Name, Value, Category) VALUES(?,?,?)''' % TableName,(value.name(), str(binascii.b2a_hex(value.raw_data())), Category))
+                cursor.execute('''INSERT INTO %s (Name, Value, Category) VALUES(?,?,?)''' % TableName,
+                               (value.name(),
+                                str(binascii.b2a_hex(value.raw_data())), Category))
     except:
         print"Error in ReadAllReg"
 

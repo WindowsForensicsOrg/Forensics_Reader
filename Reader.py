@@ -28,7 +28,9 @@ import sqlite3
 import sys
 import tkFont
 
+import tkTable
 from Methods import *
+
 # from tkMessageBox import *
 from tkFileDialog import askdirectory
 
@@ -110,9 +112,9 @@ class GUI(object):
 
     def _grid(self):
         self.StartExam()
-        # table = tkTable.Table(root, rows=2, cols=10)
-        # table.pack()
-        # table.pack()
+        table = tkTable.Table(root, rows=2, cols=10)
+        table.pack()
+
 
 
 OSdb = sqlite3.connect(":memory:")

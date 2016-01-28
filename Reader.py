@@ -23,14 +23,14 @@
 #
 # !/usr/bin/python
 # !/usr/bin/python
+import Tkinter as tk
 import sqlite3
+import sys
 import tkFont
-from Tkinter import *
 
 from Methods import *
 # from tkMessageBox import *
 from tkFileDialog import askdirectory
-import tkTable
 
 
 class GUI(object):
@@ -60,49 +60,59 @@ class GUI(object):
         fontHead = tkFont.Font(family="Arial", size=10, weight=tkFont.BOLD)
         fontBold = tkFont.Font(family="Arial", size=8, weight=tkFont.BOLD)
         fontReg = tkFont.Font(family="Arial", size=8)
-        frameN = Frame(master)
+        frameN = tk.Frame(master)
         frameN.grid(row=0, padx=5, pady=5)
-        frameXBH = Frame(frameN)
+        frameXBH = tk.Frame(frameN)
         frameXBH.grid(row=0, columnspan=5, padx=5)
-        Canvas(frameXBH, borderwidth=0, relief="flat", height=1, width=20, background="#cccccc").grid(row=0)
-        Label(frameXBH, text="Forensics Reader", font=fontBold, width=15).grid(row=0, column=1)
-        Canvas(frameXBH, borderwidth=0, relief="flat", height=1, width=800, background="#cccccc").grid(row=0, column=2,
+        tk.Canvas(frameXBH, borderwidth=0, relief="flat", height=1, width=20, background="#cccccc").grid(row=0)
+        tk.Label(frameXBH, text="Forensics Reader", font=fontBold, width=15).grid(row=0, column=1)
+        tk.Canvas(frameXBH, borderwidth=0, relief="flat", height=1, width=800, background="#cccccc").grid(row=0,
+                                                                                                          column=2,
                                                                                                        sticky="WE")
-        Label(frameN, text="Directory containing exported files:", font=fontReg).grid(row=1, sticky="W")
-        xbPath = Entry(frameN, width=30, font=fontReg)
+        tk.Label(frameN, text="Directory containing exported files:", font=fontReg).grid(row=1, sticky="W")
+        xbPath = tk.Entry(frameN, width=30, font=fontReg)
         xbPath.grid(row=1, column=1, sticky="W")
-        xbBrowse = Button(frameN, text="Browse for folder", font=fontReg, command=lambda: self.get_dir(xbPath))
+        xbBrowse = tk.Button(frameN, text="Browse for folder", font=fontReg,
+                             command=lambda: self.get_dir(master, xbPath))
         xbBrowse.grid(row=1, column=2, sticky="W")
-        xbRel = Checkbutton(frameN, text="Save case for later", font=fontReg)
+        xbRel = tk.Checkbutton(frameN, text="Save case for later", font=fontReg)
         xbRel.grid(row=1, column=4, sticky="W")
-        Canvas(frameN, borderwidth=1, relief="groove", width=800, height=0).grid(row=2, columnspan=5, pady=10)
+        tk.Canvas(frameN, borderwidth=1, relief="groove", width=800, height=0).grid(row=2, columnspan=5, pady=10)
         # SAVE AND CANCEL
-        btnSave = Button(frameN, text="Start", width=10, command=lambda: self.grid())
+        btnSave = tk.Button(frameN, text="Start", width=10, command=lambda: self._grid())
         btnSave.grid(row=3, column=3, sticky="E")
-        btnCancel = Button(frameN, text="Cancel", width=10, command=lambda: self.cancel_btn())
+        btnCancel = tk.Button(frameN, text="Cancel", width=10, command=lambda: self.cancel_btn())
         btnCancel.grid(row=3, column=4, sticky="W")
+
+    #    def create_window(self):
+    #        self.counter += 1
+    #        t = tk.Toplevel(self)
+    #        t.wm_title("Window #%s" % self.counter)
+    #        l = tk.Label(t, text="This is window #%s" % self.counter)
+    #        l.pack(side="top", fill="both", expand=True, padx=100, pady=100)
 
     def cancel_btn(self):
         sys.exit(-1)
 
-    def get_dir(self, master):
+    def get_dir(self, master, masterPath):
+        global globvar
         dirname = askdirectory(mustexist=1, title="Please select folder containing exported files")
         dirname = dirname.replace("/", "\\")
-        master.delete(0, END)
-        master.insert(0, dirname)
-        self.StartExam(dirname)
+        globvar = dirname
+        masterPath.insert(0, dirname)
 
-    def StartExam(self, dirname):
-        Fetch_Info(Userdb, dirname, UserCursor, "NTUSER.DAT", "UsersInfo",
+    def StartExam(self):
+        Fetch_Info(Userdb, globvar, UserCursor, "NTUSER.DAT", "UsersInfo",
                    r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Typed Urls")  # Typed Paths
-        Userdb.commit()
-        ReadSingleReg(OSdb, "SYSTEM", dirname, "Select", "Current", cursorOS, "OsInfo",
+
+        ReadSingleReg(OSdb, "SYSTEM", globvar, "Select", "Current", cursorOS, "OsInfo",
                       "CurrentControlSet")  # CurrentControlSet
 
-    def grid(self):
-        table = tkTable.Table(root, rows=2, cols=10)
-        table.pack()
-        table.pack()
+    def _grid(self):
+        self.StartExam()
+        # table = tkTable.Table(root, rows=2, cols=10)
+        # table.pack()
+        # table.pack()
 
 
 OSdb = sqlite3.connect(":memory:")
@@ -134,7 +144,7 @@ def main():
 
 
 if __name__ == "__main__":
-    root = Tk()
+    root = tk.Tk()
     root.resizable(0, 0)
     app = GUI(root)
     root.mainloop()

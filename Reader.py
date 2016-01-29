@@ -25,12 +25,10 @@
 # !/usr/bin/python
 import Tkinter as tk
 import sqlite3
-import sys
 import tkFont
+from collections import *
 
-import tkTable
 from Methods import *
-
 # from tkMessageBox import *
 from tkFileDialog import askdirectory
 
@@ -57,6 +55,7 @@ class GUI(object):
 
       """
 
+    # global xbPath = None
     def __init__(self, master):
         self.master = master
         fontHead = tkFont.Font(family="Arial", size=10, weight=tkFont.BOLD)
@@ -72,50 +71,49 @@ class GUI(object):
                                                                                                           column=2,
                                                                                                        sticky="WE")
         tk.Label(frameN, text="Directory containing exported files:", font=fontReg).grid(row=1, sticky="W")
-        xbPath = tk.Entry(frameN, width=30, font=fontReg)
+        global xbPath
+        xbPath = tk.Entry(frameN, text="hhe", width=30, font=fontReg)
         xbPath.grid(row=1, column=1, sticky="W")
         xbBrowse = tk.Button(frameN, text="Browse for folder", font=fontReg,
-                             command=lambda: self.get_dir(master, xbPath))
+                             command=lambda: self.get_dir(xbPath))
         xbBrowse.grid(row=1, column=2, sticky="W")
         xbRel = tk.Checkbutton(frameN, text="Save case for later", font=fontReg)
         xbRel.grid(row=1, column=4, sticky="W")
         tk.Canvas(frameN, borderwidth=1, relief="groove", width=800, height=0).grid(row=2, columnspan=5, pady=10)
         # SAVE AND CANCEL
-        btnSave = tk.Button(frameN, text="Start", width=10, command=lambda: self._grid())
-        btnSave.grid(row=3, column=3, sticky="E")
+        btnStart = tk.Button(frameN, text="Start", width=10, command=lambda: self.StartExam())
+        btnStart.grid(row=3, column=3, sticky="E")
         btnCancel = tk.Button(frameN, text="Cancel", width=10, command=lambda: self.cancel_btn())
         btnCancel.grid(row=3, column=4, sticky="W")
 
-    #    def create_window(self):
-    #        self.counter += 1
-    #        t = tk.Toplevel(self)
-    #        t.wm_title("Window #%s" % self.counter)
-    #        l = tk.Label(t, text="This is window #%s" % self.counter)
-    #        l.pack(side="top", fill="both", expand=True, padx=100, pady=100)
+    ##
+    #   def create_window(self):
+    #       t = tk.Toplevel(root)
+    #       t.wm_title("Window #4")
+    #       tk.Frame.__init__(self, master)
+    #       self.tree = ttk.Treeview(self)
+    #       self.tree.insert('', 'end', 'widgets', text='Widget Tour')
+    ##
 
     def cancel_btn(self):
+
         sys.exit(-1)
 
-    def get_dir(self, master, masterPath):
-        global globvar
-        dirname = askdirectory(mustexist=1, title="Please select folder containing exported files")
-        dirname = dirname.replace("/", "\\")
-        globvar = dirname
-        masterPath.insert(0, dirname)
+    def get_dir(self, xbPath):
+        xbPath.delete(0, "end")
+        xbPath.insert(1, askdirectory(mustexist=1, title="Please select folder containing exported files").replace("/",
+                                                                                                                   "\\"))
+
 
     def StartExam(self):
-        Fetch_Info(Userdb, globvar, UserCursor, "NTUSER.DAT", "UsersInfo",
+        Fetch_Info(Userdb, xbPath.get(), UserCursor, "NTUSER.DAT", "UsersInfo",
                    r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Typed Urls")  # Typed Paths
-
-        ReadSingleReg(OSdb, "SYSTEM", globvar, "Select", "Current", cursorOS, "OsInfo",
+        ReadSingleReg(OSdb, "SYSTEM", xbPath.get(), "Select", "Current", cursorOS, "OsInfo",
                       "CurrentControlSet")  # CurrentControlSet
 
     def _grid(self):
         self.StartExam()
-        table = tkTable.Table(root, rows=2, cols=10)
-        table.pack()
-
-
+        #self.create_window()
 
 OSdb = sqlite3.connect(":memory:")
 Userdb = sqlite3.connect(":memory:")
@@ -133,10 +131,6 @@ UserCursor.execute('''CREATE TABLE UsersInfo(Id INTEGER PRIMARY KEY, Name TEXT, 
     # printList(result1)
     # printList(result3)
 """
-
-
-
-
 
 def main():
 

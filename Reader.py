@@ -26,14 +26,17 @@
 import Tkinter as tk
 import sqlite3
 import tkFont
+import sys
 from collections import *
+from tkFileDialog import askdirectory
+from Registry import Registry
+
 
 from Methods import *
-# from tkMessageBox import *
-from tkFileDialog import askdirectory
 
 
 class GUI(object):
+    counter = 0
     """  def __init__(self, master):
           self.master=master
           b = Button(text="Browse...",command=lambda : master.callback())
@@ -81,22 +84,13 @@ class GUI(object):
         xbRel.grid(row=1, column=4, sticky="W")
         tk.Canvas(frameN, borderwidth=1, relief="groove", width=800, height=0).grid(row=2, columnspan=5, pady=10)
         # SAVE AND CANCEL
-        btnStart = tk.Button(frameN, text="Start", width=10, command=lambda: self.StartExam())
+        btnStart = tk.Button(frameN, text="Start", width=10, command=lambda: self._grid())
         btnStart.grid(row=3, column=3, sticky="E")
         btnCancel = tk.Button(frameN, text="Cancel", width=10, command=lambda: self.cancel_btn())
         btnCancel.grid(row=3, column=4, sticky="W")
 
-    ##
-    #   def create_window(self):
-    #       t = tk.Toplevel(root)
-    #       t.wm_title("Window #4")
-    #       tk.Frame.__init__(self, master)
-    #       self.tree = ttk.Treeview(self)
-    #       self.tree.insert('', 'end', 'widgets', text='Widget Tour')
-    ##
 
     def cancel_btn(self):
-
         sys.exit(-1)
 
     def get_dir(self, xbPath):
@@ -104,16 +98,21 @@ class GUI(object):
         xbPath.insert(1, askdirectory(mustexist=1, title="Please select folder containing exported files").replace("/",
                                                                                                                    "\\"))
 
+    def create_window(self):
+        toplevel = tk.Toplevel()
+        toplevel.title('Another window')
+        toplevel.focus_set()
 
     def StartExam(self):
         Fetch_Info(Userdb, xbPath.get(), UserCursor, "NTUSER.DAT", "UsersInfo",
                    r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Typed Urls")  # Typed Paths
+
         ReadSingleReg(OSdb, "SYSTEM", xbPath.get(), "Select", "Current", cursorOS, "OsInfo",
                       "CurrentControlSet")  # CurrentControlSet
 
     def _grid(self):
         self.StartExam()
-        #self.create_window()
+        self.create_window()
 
 OSdb = sqlite3.connect(":memory:")
 Userdb = sqlite3.connect(":memory:")
@@ -125,11 +124,9 @@ UserCursor.execute('''CREATE TABLE UsersInfo(Id INTEGER PRIMARY KEY, Name TEXT, 
 """
 # print "Mounted Devices:"
     # result2 = ReadAllReg(dirname + r"\SYSTEM", "MountedDevices", db)
-    # result3 = ReadAllReg(dirname + r"\SOFTWARE", "Microsoft\\Windows NT\\CurrentVersion", db)
     # print "Current controlset: %s" % forensicating.control_set_check(path + r'\SYSTEM')
     # print os_settings(path + r'\SYSTEM', dirname + r'\SOFTWARE')
-    # printList(result1)
-    # printList(result3)
+
 """
 
 def main():

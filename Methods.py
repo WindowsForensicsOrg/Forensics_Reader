@@ -30,6 +30,7 @@ from Registry import Registry
 
 def ReadSingleReg(db, hive, path, regPath, Key, cursor, TableName, Category):
     reg = Registry.Registry(path + "\\" + hive)
+
     try:
         key = reg.open(regPath)
     except Registry.RegistryKeyNotFoundException:
@@ -46,11 +47,11 @@ def ReadSingleReg(db, hive, path, regPath, Key, cursor, TableName, Category):
         return db
     except:
         print "Error in ReadSingleReg"
+
         return db
 
 
 def Fetch_Info(db, path, cursor, HiveName, TableName, regPath, Category):
-    print "Typed URL's"
     ReadAllReg(cursor, path + "\\" + HiveName, TableName, regPath, db, Category)
     cursor.execute('''SELECT * FROM %s''' % TableName)
     all_rows = cursor.fetchall()

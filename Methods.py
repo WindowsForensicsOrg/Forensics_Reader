@@ -61,7 +61,7 @@ def Fetch_Info(db, path, cursor, HiveName, TableName, regPath, Category):
 
 def ReadAllReg(cursor, Hive, TableName, regPath, db, Category):
     reg = Registry.Registry(Hive)
-    try:
+    try: 
         key = reg.open(regPath)
     except Registry.RegistryKeyNotFoundException:
         print "Couldn't find %s..." % regPath

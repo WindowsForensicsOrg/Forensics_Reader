@@ -26,10 +26,13 @@
 import Tkinter as tk
 import sqlite3
 import tkFont
-import sys
-from tkFileDialog import askdirectory
 import ttk
+import sys
+from collections import *
+from tkFileDialog import askdirectory
+
 from Methods import *
+
 
 class GUI(object):
 
@@ -71,7 +74,7 @@ class GUI(object):
                                                                                                                    "\\"))
 
     def create_window(self, master):
-        root = Tk()
+        root = tk.Toplevel()
         tree = ttk.Treeview(root)
         tree["columns"] = ("one", "two", "three")
         tree.column("one", width=100)

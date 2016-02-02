@@ -27,38 +27,12 @@ import Tkinter as tk
 import sqlite3
 import tkFont
 import sys
-from collections import *
 from tkFileDialog import askdirectory
-from Registry import Registry
-
-
+import ttk
 from Methods import *
 
-
 class GUI(object):
-    counter = 0
-    """  def __init__(self, master):
-          self.master=master
-          b = Button(text="Browse...",command=lambda : master.callback())
-          b.pack()
 
-          pad=3
-          self._geom='300x300+0+0'
-          master.geometry("{0}x{1}+0+0".format(
-              master.winfo_screenwidth()-pad, master.winfo_screenheight()-pad))
-          master.bind('<Escape>',self.toggle_geom)
-
-      def toggle_geom(self,event):
-          geom=self.master.winfo_geometry()
-          print(geom,self._geom)
-          self.master.geometry(self._geom)
-          self._geom=geom
-      def callback(self, master):
-          dirname = askdirectory(parent=root,initialdir="/",title='Path to exported files')
-
-      """
-
-    # global xbPath = None
     def __init__(self, master):
         self.master = master
         fontHead = tkFont.Font(family="Arial", size=10, weight=tkFont.BOLD)
@@ -72,19 +46,17 @@ class GUI(object):
         tk.Label(frameXBH, text="Forensics Reader", font=fontBold, width=15).grid(row=0, column=1)
         tk.Canvas(frameXBH, borderwidth=0, relief="flat", height=1, width=800, background="#cccccc").grid(row=0,
                                                                                                           column=2,
-                                                                                                       sticky="WE")
+                                                                                                          sticky="WE")
         tk.Label(frameN, text="Directory containing exported files:", font=fontReg).grid(row=1, sticky="W")
         global xbPath
         xbPath = tk.Entry(frameN, text="hhe", width=30, font=fontReg)
         xbPath.grid(row=1, column=1, sticky="W")
-        xbBrowse = tk.Button(frameN, text="Browse for folder", font=fontReg,
-                             command=lambda: self.get_dir(xbPath))
+        xbBrowse = tk.Button(frameN, text="Browse for folder", font=fontReg, command=lambda: self.get_dir(xbPath))
         xbBrowse.grid(row=1, column=2, sticky="W")
         xbRel = tk.Checkbutton(frameN, text="Save case for later", font=fontReg)
         xbRel.grid(row=1, column=4, sticky="W")
         tk.Canvas(frameN, borderwidth=1, relief="groove", width=800, height=0).grid(row=2, columnspan=5, pady=10)
-        # SAVE AND CANCEL
-        btnStart = tk.Button(frameN, text="Start", width=10, command=lambda: self._grid())
+        btnStart = tk.Button(frameN, text="Start", width=10, command=lambda: self._grid(frameXBH))
         btnStart.grid(row=3, column=3, sticky="E")
         btnCancel = tk.Button(frameN, text="Cancel", width=10, command=lambda: self.cancel_btn())
         btnCancel.grid(row=3, column=4, sticky="W")
@@ -98,10 +70,34 @@ class GUI(object):
         xbPath.insert(1, askdirectory(mustexist=1, title="Please select folder containing exported files").replace("/",
                                                                                                                    "\\"))
 
-    def create_window(self):
-        toplevel = tk.Toplevel()
-        toplevel.title('Another window')
-        toplevel.focus_set()
+    def create_window(self, master):
+        root = Tk()
+        tree = ttk.Treeview(root)
+        tree["columns"] = ("one", "two", "three")
+        tree.column("one", width=100)
+        tree.column("two", width=100)
+        tree.column("three", width=100)
+        tree.heading("one", text="coulmn A")
+        tree.heading("two", text="column B")
+        tree.heading("two", text="column C")
+        tree.insert("", 0, text="Line 1", values=("1A", "1b"))
+        id2 = tree.insert("", 1, "dir2", text="Dir 2")
+        tree.insert(id2, "end", "dir 2", text="sub dir 2", values=("2A", "2B"))
+        ##alternatively:
+        tree.insert("", 3, "dir3", text="Dir 3")
+        tree.insert("dir3", 3, text=" sub dir 3", values=("3A", " 3B"))
+        tree.insert("", 3, "dir4", text="Dir 4")
+        tree.insert("dir4", 3, text=" sub dir 4", values=("3A", " 3B"))
+        tree.insert("dir4", 3, text=" sub dir 4", values=("33", " 333"))
+        tree.pack()
+        root.mainloop()
+
+    def populate_grid(TableName, cursor):
+        cursor.execute('''SELECT * FROM %s''' % TableName)
+
+        all_rows = cursor.fetchall()
+        for row in all_rows:
+            print('{0} : {1}, {2}'.format(row[0], row[1], row[2]))
 
     def StartExam(self):
         Fetch_Info(Userdb, xbPath.get(), UserCursor, "NTUSER.DAT", "UsersInfo",
@@ -110,9 +106,12 @@ class GUI(object):
         ReadSingleReg(OSdb, "SYSTEM", xbPath.get(), "Select", "Current", cursorOS, "OsInfo",
                       "CurrentControlSet")  # CurrentControlSet
 
-    def _grid(self):
+    def _grid(self, master):
         self.StartExam()
-        self.create_window()
+        self.create_window(master)
+        # self.populate_grid()
+
+
 
 OSdb = sqlite3.connect(":memory:")
 Userdb = sqlite3.connect(":memory:")

@@ -40,18 +40,23 @@ def ReadSingleReg(db, hive, path, regPath, Key, cursor, TableName, Category):
         k = reg.open(regPath)
         v = k.value(Key)
         cursor.execute('''INSERT INTO %s  (Name, Value, Category) VALUES(?,?,?)''' % TableName, (v.name(), v.value(), Category))
-        # populate_grid(TableName, cursor)
-        return db
+        cursor.execute('''SELECT * FROM %s''' % TableName)
+
+        all_rows = cursor.fetchall()
+        fo = open(TableName + ".txt", "wb")
+        for row in all_rows:
+            print('{0} : {1}, {2}'.format(row[0], row[1], row[2]))
+            fo.write('{0} : {1}, {2}'.format(row[0], row[1], row[2]))
+        fo.close()
     except:
         print "Error in ReadSingleReg"
 
-        return db
+
 
 
 def Fetch_Info(db, path, cursor, HiveName, TableName, regPath, Category):
     ReadAllReg(cursor, path + "\\" + HiveName, TableName, regPath, db, Category)
     # populate_grid(TableName, cursor)
-    return db
 
 
 def ReadAllReg(cursor, Hive, TableName, regPath, db, Category):
@@ -71,7 +76,14 @@ def ReadAllReg(cursor, Hive, TableName, regPath, db, Category):
                 cursor.execute('''INSERT INTO %s (Name, Value, Category) VALUES(?,?,?)''' % TableName,
                                (value.name(),
                                 str(binascii.b2a_hex(value.raw_data())), Category))
+
+            cursor.execute('''SELECT * FROM %s''' % TableName)
+            all_rows = cursor.fetchall()
+            fo = open(TableName + ".txt", "wb")
+            for row in all_rows:
+                print('{0} : {1}, {2}'.format(row[0], row[1], row[2]))
+                fo.writelines('{0} : {1}, {2}\r\n'.format(row[0], row[1], row[2]))
+
+            fo.close()
     except:
         print"Error in ReadAllReg"
-
-    return db

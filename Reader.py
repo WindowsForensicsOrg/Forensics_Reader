@@ -95,12 +95,7 @@ class GUI(object):
         tree.pack()
         root.mainloop()
 
-    def populate_grid(TableName, cursor):
-        cursor.execute('''SELECT * FROM %s''' % TableName)
 
-        all_rows = cursor.fetchall()
-        for row in all_rows:
-            print('{0} : {1}, {2}'.format(row[0], row[1], row[2]))
 
     def StartExam(self):
         Fetch_Info(Userdb, xbPath.get(), UserCursor, "NTUSER.DAT", "UsersInfo",
@@ -111,9 +106,8 @@ class GUI(object):
 
     def _grid(self, master):
         self.StartExam()
-        self.create_window(master)
-        # self.populate_grid()
 
+        self.create_window(master)
 
 
 OSdb = sqlite3.connect(":memory:")

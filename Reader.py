@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  untitled.py
+#  Reader.py
 #
-#  Copyright 2016 ras <sansforensics@siftworkstation>
+#  Copyright 2016 ras <riisras@gmail.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,13 +22,10 @@
 #
 #
 # !/usr/bin/python
-# !/usr/bin/python
 import Tkinter as tk
 import sqlite3
 import tkFont
 import ttk
-import sys
-from collections import *
 from tkFileDialog import askdirectory
 
 from Methods import *
@@ -47,9 +44,7 @@ class GUI(object):
         frameXBH.grid(row=0, columnspan=5, padx=5)
         tk.Canvas(frameXBH, borderwidth=0, relief="flat", height=1, width=20, background="#cccccc").grid(row=0)
         tk.Label(frameXBH, text="Forensics Reader", font=fontBold, width=15).grid(row=0, column=1)
-        tk.Canvas(frameXBH, borderwidth=0, relief="flat", height=1, width=800, background="#cccccc").grid(row=0,
-                                                                                                          column=2,
-                                                                                                          sticky="WE")
+        tk.Canvas(frameXBH, borderwidth=0, relief="flat", height=1, width=800, background="#cccccc").grid(row=0,column=2,sticky="WE")
         tk.Label(frameN, text="Directory containing exported files:", font=fontReg).grid(row=1, sticky="W")
         global xbPath
         xbPath = tk.Entry(frameN, text="hhe", width=30, font=fontReg)
@@ -65,15 +60,31 @@ class GUI(object):
         btnCancel.grid(row=3, column=4, sticky="W")
 
 
+
     def cancel_btn(self):
-        sys.exit(-1)
+        raise SystemExit
 
     def get_dir(self, xbPath):
         xbPath.delete(0, "end")
-        xbPath.insert(1, askdirectory(mustexist=1, title="Please select folder containing exported files").replace("/",
-                                                                                                                   "\\"))
+        xbPath.insert(1, askdirectory(mustexist=1, title="Please select folder containing exported files").replace("/", "\\"))
+
+    def StartExam(self):  # Order:(db, cursor, hive, TableName, regPath, Key, Category):
+
+        ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Typed Urls")  # Typed Paths
+
+        ReadSingleReg(db, cursor, xbPath.get() + "\\SYSTEM", "Info", "Select", "Current", "CurrentControlSet")  # CurrentControlSet
+
+    def _grid(self, master):
+        self.StartExam()
+        self.create_window(master)
 
     def create_window(self, master):
+        cursor.execute('''SELECT * FROM %s''' % "Info")
+        all_rows = cursor.fetchall()
+        fo = open("Info.txt", "wb")
+        for row in all_rows:
+            print('{0} : {1}, {2}, {3}'.format(row[0], row[1], row[2], row[3]))
+            fo.writelines('{0} : {1}, {2}, {3}\r\n'.format(row[0], row[1], row[2], row[3]))
         root = tk.Toplevel()
         tree = ttk.Treeview(root)
         tree["columns"] = ("one", "two", "three")
@@ -93,29 +104,14 @@ class GUI(object):
         tree.insert("dir4", 3, text=" sub dir 4", values=("3A", " 3B"))
         tree.insert("dir4", 3, text=" sub dir 4", values=("33", " 333"))
         tree.pack()
+        fo.close()
         root.mainloop()
 
 
+db = sqlite3.connect(":memory:")
+cursor = db.cursor()
+cursor.execute('''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT)''')
 
-    def StartExam(self):
-        Fetch_Info(Userdb, xbPath.get(), UserCursor, "NTUSER.DAT", "UsersInfo",
-                   r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Typed Urls")  # Typed Paths
-
-        ReadSingleReg(OSdb, "SYSTEM", xbPath.get(), "Select", "Current", cursorOS, "OsInfo",
-                      "CurrentControlSet")  # CurrentControlSet
-
-    def _grid(self, master):
-        self.StartExam()
-
-        self.create_window(master)
-
-
-OSdb = sqlite3.connect(":memory:")
-Userdb = sqlite3.connect(":memory:")
-UserCursor = Userdb.cursor()
-cursorOS = OSdb.cursor()
-cursorOS.execute('''CREATE TABLE OsInfo(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT)''')
-UserCursor.execute('''CREATE TABLE UsersInfo(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT, Category TEXT)''')
 
 """
 # print "Mounted Devices:"
@@ -126,10 +122,9 @@ UserCursor.execute('''CREATE TABLE UsersInfo(Id INTEGER PRIMARY KEY, Name TEXT, 
 """
 
 def main():
+    db.commit()
+    db.close()
 
-    OSdb.commit()
-    OSdb.close()
-    Userdb.close()
 
 
 if __name__ == "__main__":

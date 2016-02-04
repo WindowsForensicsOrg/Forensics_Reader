@@ -22,14 +22,14 @@
 #
 #
 # !/usr/bin/python
-# !/usr/bin/python
+
 import binascii
 
 from Registry import Registry
 
 
-def ReadSingleReg(db, hive, path, regPath, Key, cursor, TableName, Category):
-    reg = Registry.Registry(path + "\\" + hive)
+def ReadSingleReg(db, cursor, hive, TableName, regPath, Key, Category):
+    reg = Registry.Registry(hive)
 
     try:
         key = reg.open(regPath)
@@ -40,50 +40,23 @@ def ReadSingleReg(db, hive, path, regPath, Key, cursor, TableName, Category):
         k = reg.open(regPath)
         v = k.value(Key)
         cursor.execute('''INSERT INTO %s  (Name, Value, Category) VALUES(?,?,?)''' % TableName, (v.name(), v.value(), Category))
-        cursor.execute('''SELECT * FROM %s''' % TableName)
 
-        all_rows = cursor.fetchall()
-        fo = open(TableName + ".txt", "wb")
-        for row in all_rows:
-            print('{0} : {1}, {2}'.format(row[0], row[1], row[2]))
-            fo.write('{0} : {1}, {2}'.format(row[0], row[1], row[2]))
-        fo.close()
     except:
         print "Error in ReadSingleReg"
 
 
-
-
-def Fetch_Info(db, path, cursor, HiveName, TableName, regPath, Category):
-    ReadAllReg(cursor, path + "\\" + HiveName, TableName, regPath, db, Category)
-    # populate_grid(TableName, cursor)
-
-
-def ReadAllReg(cursor, Hive, TableName, regPath, db, Category):
+def ReadAllReg(db, cursor, Hive, TableName, regPath, Category):
     reg = Registry.Registry(Hive)
     try:
         key = reg.open(regPath)
     except Registry.RegistryKeyNotFoundException:
         print "Couldn't find %s..." % regPath
-        pass
     try:
         for value in [v for v in key.values()]:
             try:
-                #  if v.value_type() == Registry.RegSZ or v.value_type() == Registry.RegExpandSZ or v.value_type() == Registry.RegBin:
-                cursor.execute('''INSERT INTO %s  (Name, Value, Category) VALUES(?,?,?)''' % TableName,
-                               [value.name(), value.value(), Category])
+                cursor.execute('''INSERT INTO %s  (Name, Value, Category) VALUES(?,?,?)''' % TableName,[value.name(), value.value(), Category])
             except:
-                cursor.execute('''INSERT INTO %s (Name, Value, Category) VALUES(?,?,?)''' % TableName,
-                               (value.name(),
-                                str(binascii.b2a_hex(value.raw_data())), Category))
+                cursor.execute('''INSERT INTO %s (Name, Value, Category) VALUES(?,?,?)''' % TableName,(value.name(), str(binascii.b2a_hex(value.raw_data())), Category))
 
-            cursor.execute('''SELECT * FROM %s''' % TableName)
-            all_rows = cursor.fetchall()
-            fo = open(TableName + ".txt", "wb")
-            for row in all_rows:
-                print('{0} : {1}, {2}'.format(row[0], row[1], row[2]))
-                fo.writelines('{0} : {1}, {2}\r\n'.format(row[0], row[1], row[2]))
-
-            fo.close()
     except:
         print"Error in ReadAllReg"

@@ -68,42 +68,71 @@ class GUI(object):
         xbPath.delete(0, "end")
         xbPath.insert(1, askdirectory(mustexist=1, title="Please select folder containing exported files").replace("/", "\\"))
 
+    def OnDoubleClick(self, event):
+        item = self.tree.selection()[0]
+        if self.tree.item(item,"text") == "User activities":
+            self.tree["displaycolumns"]=("Keyname", "Keyvalue")
+
+        elif self.tree.item(item,"text") == "Operating System information":
+            self.tree["displaycolumns"]=("Keyname", "Keyvalue")
+
+
     def StartExam(self):  # Order:(db, cursor, hive, TableName, regPath, Key, Category):
-
         ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Typed Urls")  # Typed Paths
+        ReadSingleReg(db, cursor, xbPath.get() + "\\SYSTEM", "Info", "Select", "Current", "OS")  # CurrentControlSet
 
-        ReadSingleReg(db, cursor, xbPath.get() + "\\SYSTEM", "Info", "Select", "Current", "CurrentControlSet")  # CurrentControlSet
+
 
     def _grid(self, master):
         self.StartExam()
         self.create_window(master)
 
+
+
     def create_window(self, master):
+        root = tk.Toplevel()
+        self.tree = ttk.Treeview(root)
+        root.geometry("{0}x{1}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
+
+        self.tree["columns"] = ("Keyname", "Keyvalue")
+        #tree.column("one", width=100)
+        self.tree.column("Keyname", width=100)
+        self.tree.column("Keyvalue", width=2000)
+        #tree.heading("one", text="ID")
+        self.tree.heading("Keyname", text="Key Name")
+        self.tree.heading("Keyvalue", text="Key value")
+        self.tree.insert("", 3, "dirOS", open=False, text="Operating System information")
+        self.tree.insert("", 3, "dirUser",open=False, text="User activities")
+
         cursor.execute('''SELECT * FROM %s''' % "Info")
         all_rows = cursor.fetchall()
         fo = open("Info.txt", "wb")
         for row in all_rows:
             print('{0} : {1}, {2}, {3}'.format(row[0], row[1], row[2], row[3]))
             fo.writelines('{0} : {1}, {2}, {3}\r\n'.format(row[0], row[1], row[2], row[3]))
-        root = tk.Toplevel()
-        tree = ttk.Treeview(root)
-        tree["columns"] = ("one", "two", "three")
-        tree.column("one", width=100)
-        tree.column("two", width=100)
-        tree.column("three", width=100)
-        tree.heading("one", text="coulmn A")
-        tree.heading("two", text="column B")
-        tree.heading("two", text="column C")
-        tree.insert("", 0, text="Line 1", values=("1A", "1b"))
-        id2 = tree.insert("", 1, "dir2", text="Dir 2")
-        tree.insert(id2, "end", "dir 2", text="sub dir 2", values=("2A", "2B"))
-        ##alternatively:
-        tree.insert("", 3, "dir3", text="Dir 3")
-        tree.insert("dir3", 3, text=" sub dir 3", values=("3A", " 3B"))
-        tree.insert("", 3, "dir4", text="Dir 4")
-        tree.insert("dir4", 3, text=" sub dir 4", values=("3A", " 3B"))
-        tree.insert("dir4", 3, text=" sub dir 4", values=("33", " 333"))
-        tree.pack()
+            if row[3] == "OS":
+                self.tree.insert("dirOS", 0, text="Operating System information", values=(row[1], row[2]))
+            if row[3] == "Typed Urls":
+                #tree.heading('#0', text="name") CHANGE COLUMN HEADER!!!
+                try:
+                    self.tree.insert("dirUser", 3, "dirURLS", open=False,text="Typed Urls")
+                    self.tree.insert("dirURLS", 3, text="", values=(row[1], row[2]))
+                except:
+                    self.tree.insert("dirURLS", 3, text="", values=(row[1], row[2]))
+
+        #tree.insert("", 0, text="Line 1", values=("1A", "1b"))
+        #id2 = tree.insert("", 1, "dir2", text="Dir 2")
+        #tree.insert(id2, "end", "dir 2", text="sub dir 2", values=("2A", "2B"))
+        ###alternatively:
+
+        #tree.insert("dir3", 3, text=" sub dir 3", values=("3A", " 3B"))
+      #  tree.insert("", 3, "dir4", text="Dir 4")
+      #  tree.insert("dir4", 3, "dir5", text="subdir")
+      #  tree.insert("dir5", 3, text=" sub dir 5", values=("3A", " 3B"))
+        #tree.insert("dir4", 3, text=" sub dir 4", values=("33", " 333"))
+        #tree.pack()
+        self.tree.bind("<<TreeviewOpen>>", self.OnDoubleClick)
+        self.tree.pack(expand=1, fill='both', side='bottom')
         fo.close()
         root.mainloop()
 

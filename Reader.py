@@ -58,23 +58,24 @@ class GUI(object):
         btnCancel = tk.Button(frameN, text="Cancel", width=10, command=lambda: self.cancel_btn())
         btnCancel.grid(row=3, column=4, sticky="W")
 
-    def cancel_btn(self):
+    def cancel_btn(self): #Cancel button
         raise SystemExit
 
-    def get_dir(self, xbPath):
+    def get_dir(self, xbPath): #Pich folder containing files
         xbPath.delete(0, "end")
         xbPath.insert(1, askdirectory(mustexist=1, title="Please select folder containing exported files").replace("/", "\\"))
 
-    def OnClick(self, event):
-
+    def OnClick(self, event): #When user expands a tree in treeview the columns are selected
         item = self.tree.selection()[0]
-        if self.tree.item(item,"text") in ("User activities", "Operating System information", "Mounted Devices"):
+        if self.tree.item(item,"text") in ("User activities", "Operating System information", "Mounted Devices"): #The list of 'directories'
             self.tree["displaycolumns"]=("Keyname", "Keyvalue")
+           # for row in self.tree.get_children(): #function to close all nodes. broken. Sæt den til overmappen og luk kun enkelte
+            #    self.tree.item(row, open=False)
         else:
             print "Error. Value not in list"
 
 
-    def StartExam(self):  # Order:(db, cursor, hive, TableName, regPath, Key, Category):
+    def StartExam(self):  # Order:(db, cursor, hive, TableName, regPath,  Key, Category, single or subdir, text):
         ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir", "Typed Urls")  # Typed Paths
         ReadAllReg(db, cursor, xbPath.get() + "\\SOFTWARE", "Info", r"Microsoft\Windows NT\CurrentVersion", "OS", "SubDir", "Operating System Information")
         ReadAllReg(db, cursor, xbPath.get() + "\SYSTEM", "Info", "MountedDevices", "OS", "SubDir", "Mounted Devices") #Mounted devices
@@ -91,7 +92,7 @@ class GUI(object):
         self.tree["columns"] = ("Keyname", "Keyvalue")
         #tree.column("one", width=100)
         self.tree.column("#0", width=300) #First column
-        self.tree.column("Keyname",width=100)
+        self.tree.column("Keyname",width=300)
         self.tree.column("Keyvalue", width=2000 )
         #tree.heading("one", text="ID")
         self.tree.heading("Keyname", text="Key Name",anchor=tk.W)
@@ -102,38 +103,35 @@ class GUI(object):
         all_rows = cursor.fetchall()
         fo = open("Info.txt", "wb")
         for row in all_rows:  #TODO. Hvilke skridt skal udføres når der kommer andre ting ind over fx. linkfiler og eventfiler.
-            #TODO Hust at kontrollere evt. UNICODE output i row[2]
             #TODO Husk at sortere i listerne i treeview så det ikke bliver 1, 10, 2, 20 osv
-            print('{0} : {1}, {2}, {3}'.format(row[0], row[1], row[2], row[3]))
-            fo.writelines('{0} : {1}, {2}, {3}\r\n'.format(row[0], row[1], row[2], row[3]))
+            #TODO hust at lukke de andre dirs når et nyt bliver åbnet så du kan sætte de rigtige columns
+            if isinstance(row[2], unicode): #binf.read().decode('utf-16').encode('utf-8')
+                try:
+                    txtStr = row[2].decode('utf-16').encode('ascii')
+                    print('{0} : {1}, {2}, {3}'.format(row[0], row[1], txtStr, row[3]))
+                except:
+                    txtStr = row[2]
+                    print('{0} : {1}, {2}, {3}'.format(row[0], row[1], txtStr, row[3]))
+
+            fo.writelines('{0} : {1}, {2}, {3}\r\n'.format(row[0], row[1], txtStr, row[3]))
             if row[3] == "OS" and row[4] == "Single":
-                self.tree.insert("dirOS", 0, text=row[5], values=(row[1], row[2]))
+                self.tree.insert("dirOS", 0, text=row[5], values=(row[1], txtStr))
             elif row[3] == "OS" and row[4] == "SubDir":
                 try:
                     self.tree.insert("dirOS", 3, row[5], open=False,text=row[5])
 
-                    self.tree.insert(row[5], 3, text="", values=(row[1], row[2]))
+                    self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
                 except:
-                    self.tree.insert(row[5], 3, text="", values=(row[1], row[2]))
+                    self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
             if row[3] == "User" and row[4] == "Single":
-                self.tree.insert("dirUser", 0, text=row[5], values=(row[1], row[2]))
+                self.tree.insert("dirUser", 0, text=row[5], values=(row[1], txtStr))
             elif row[3] == "User" and row[4] == "SubDir":
                 #tree.heading('#0', text="name") CHANGE COLUMN HEADER!!!
                 try:
                     self.tree.insert("dirUser", 3, row[5], open=False,text=row[5])
-                    self.tree.insert(row[5], 3, text="", values=(row[1], row[2]))
+                    self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
                 except:
-                     self.tree.insert(row[5], 3, text="", values=(row[1], row[2]))
-        #tree.insert("", 0, text="Line 1", values=("1A", "1b"))
-        #id2 = tree.insert("", 1, "dir2", text="Dir 2")
-        #tree.insert(id2, "end", "dir 2", text="sub dir 2", values=("2A", "2B"))
-        ###alternatively:
-        #tree.insert("dir3", 3, text=" sub dir 3", values=("3A", " 3B"))
-      #  tree.insert("", 3, "dir4", text="Dir 4")
-      #  tree.insert("dir4", 3, "dir5", text="subdir")
-      #  tree.insert("dir5", 3, text=" sub dir 5", values=("3A", " 3B"))
-        #tree.insert("dir4", 3, text=" sub dir 4", values=("33", " 333"))
-        #tree.pack()
+                     self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
         self.tree.bind("<<TreeviewOpen>>", self.OnClick)
         self.tree.pack(expand=1, fill='both', side='bottom')
         fo.close()
@@ -142,14 +140,6 @@ class GUI(object):
 db = sqlite3.connect(":memory:")
 cursor = db.cursor()
 cursor.execute('''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT)''')
-
-"""
-# print "Mounted Devices:"
-    # result2 = ReadAllReg(dirname + r"\SYSTEM", "MountedDevices", db)
-
-    # print os_settings(path + r'\SYSTEM', dirname + r'\SOFTWARE')
-
-"""
 
 def main():
     db.commit()

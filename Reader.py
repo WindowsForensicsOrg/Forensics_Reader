@@ -75,7 +75,7 @@ class GUI(object):
 
 
     def StartExam(self):  # Order:(db, cursor, hive, TableName, regPath, Key, Category):
-        ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Typed Urls", "SubDir", "Typed Urls")  # Typed Paths
+        ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir", "Typed Urls")  # Typed Paths
         ReadAllReg(db, cursor, xbPath.get() + "\SYSTEM", "Info", "MountedDevices", "OS", "SubDir", "Mounted Devices") #Mounted devices
         ReadSingleReg(db, cursor, xbPath.get() + "\\SYSTEM", "Info", "Select", "Current", "OS", "Single", "Current Control Set")  # CurrentControlSet
 
@@ -111,13 +111,15 @@ class GUI(object):
                     self.tree.insert(row[5], 3, text="", values=(row[1], row[2]))
                 except:
                     self.tree.insert(row[5], 3, text="", values=(row[1], row[2]))
-            elif row[3] == "Typed Urls":
+            if row[3] == "User" and row[4] == "Single":
+                self.tree.insert("dirUser", 0, text=row[5], values=(row[1], row[2]))
+            elif row[3] == "User" and row[4] == "SubDir":
                 #tree.heading('#0', text="name") CHANGE COLUMN HEADER!!!
                 try:
-                    self.tree.insert("dirUser", 3, "dirURLS", open=False,text="Typed Urls")
-                    self.tree.insert("dirURLS", 3, text="", values=(row[1], row[2]))
+                    self.tree.insert("dirUser", 3, row[5], open=False,text=row[5])
+                    self.tree.insert(row[5], 3, text="", values=(row[1], row[2]))
                 except:
-                    self.tree.insert("dirURLS", 3, text="", values=(row[1], row[2]))
+                     self.tree.insert(row[5], 3, text="", values=(row[1], row[2]))
         #tree.insert("", 0, text="Line 1", values=("1A", "1b"))
         #id2 = tree.insert("", 1, "dir2", text="Dir 2")
         #tree.insert(id2, "end", "dir 2", text="sub dir 2", values=("2A", "2B"))

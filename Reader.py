@@ -76,6 +76,7 @@ class GUI(object):
 
     def StartExam(self):  # Order:(db, cursor, hive, TableName, regPath, Key, Category):
         ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir", "Typed Urls")  # Typed Paths
+        ReadAllReg(db, cursor, xbPath.get() + "\\SOFTWARE", "Info", r"Microsoft\Windows NT\CurrentVersion", "OS", "SubDir", "Operating System Information")
         ReadAllReg(db, cursor, xbPath.get() + "\SYSTEM", "Info", "MountedDevices", "OS", "SubDir", "Mounted Devices") #Mounted devices
         ReadSingleReg(db, cursor, xbPath.get() + "\\SYSTEM", "Info", "Select", "Current", "OS", "Single", "Current Control Set")  # CurrentControlSet
 
@@ -102,13 +103,15 @@ class GUI(object):
         fo = open("Info.txt", "wb")
         for row in all_rows:  #TODO. Hvilke skridt skal udføres når der kommer andre ting ind over fx. linkfiler og eventfiler.
             #TODO Hust at kontrollere evt. UNICODE output i row[2]
+            #TODO Husk at sortere i listerne i treeview så det ikke bliver 1, 10, 2, 20 osv
             print('{0} : {1}, {2}, {3}'.format(row[0], row[1], row[2], row[3]))
             fo.writelines('{0} : {1}, {2}, {3}\r\n'.format(row[0], row[1], row[2], row[3]))
             if row[3] == "OS" and row[4] == "Single":
                 self.tree.insert("dirOS", 0, text=row[5], values=(row[1], row[2]))
             elif row[3] == "OS" and row[4] == "SubDir":
-                try: 
+                try:
                     self.tree.insert("dirOS", 3, row[5], open=False,text=row[5])
+
                     self.tree.insert(row[5], 3, text="", values=(row[1], row[2]))
                 except:
                     self.tree.insert(row[5], 3, text="", values=(row[1], row[2]))
@@ -143,7 +146,7 @@ cursor.execute('''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEX
 """
 # print "Mounted Devices:"
     # result2 = ReadAllReg(dirname + r"\SYSTEM", "MountedDevices", db)
-    # print "Current controlset: %s" % forensicating.control_set_check(path + r'\SYSTEM')
+
     # print os_settings(path + r'\SYSTEM', dirname + r'\SOFTWARE')
 
 """

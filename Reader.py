@@ -100,7 +100,8 @@ class GUI(object):
         cursor.execute('''SELECT * FROM %s''' % "Info")
         all_rows = cursor.fetchall()
         fo = open("Info.txt", "wb")
-        for row in all_rows:  #TODO. Hvilke skridt skal udføres når der kommer andre ting ind over fx. linkfiler og eventfiler
+        for row in all_rows:  #TODO. Hvilke skridt skal udføres når der kommer andre ting ind over fx. linkfiler og eventfiler.
+            #TODO Hust at kontrollere evt. UNICODE output i row[2]
             print('{0} : {1}, {2}, {3}'.format(row[0], row[1], row[2], row[3]))
             fo.writelines('{0} : {1}, {2}, {3}\r\n'.format(row[0], row[1], row[2], row[3]))
             if row[3] == "OS" and row[4] == "Single":

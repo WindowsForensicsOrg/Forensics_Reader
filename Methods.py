@@ -54,9 +54,30 @@ def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr)
     try:
         for value in [v for v in key.values()]:
             try:
-                cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName,[value.name(), value.value(), Category, stateStr, KeyStr])
+                if value.name() == "InstallDate":
+                    cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName, [value.name(),ToUnix(value), Category, stateStr, KeyStr])
+                elif value.name() == "InstallTime":
+                    cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName, [value.name(),FiletimeToDateTime(value), Category, stateStr, KeyStr])
+                else:
+                    cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName,[value.name(), value.value(), Category, stateStr, KeyStr])
             except:
                 cursor.execute('''INSERT INTO %s (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName,(value.name(), str(binascii.b2a_hex(value.raw_data())), Category, stateStr, KeyStr))
 
     except:
         print"Error in ReadAllReg"
+
+
+def FiletimeToDateTime(h):
+    from filetimes import filetime_to_dt
+    val = h.value()
+
+    time = filetime_to_dt(val)
+
+    return str(time) + " UTC"
+
+
+
+
+def ToUnix(value):
+    import datetime
+    return (datetime.datetime.fromtimestamp(int(value.value())).strftime('%d-%m-%Y %H:%M:%S'))

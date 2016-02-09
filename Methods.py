@@ -28,7 +28,7 @@ import binascii
 from Registry import Registry
 
 
-def ReadSingleReg(db, cursor, hive, TableName, regPath, Key, Category, stateStr):
+def ReadSingleReg(db, cursor, hive, TableName, regPath, Key, Category, stateStr, KeyStr):
     reg = Registry.Registry(hive)
 
     try:
@@ -39,13 +39,13 @@ def ReadSingleReg(db, cursor, hive, TableName, regPath, Key, Category, stateStr)
     try:
         k = reg.open(regPath)
         v = k.value(Key)
-        cursor.execute('''INSERT INTO %s  (Name, Value, Category, State) VALUES(?,?,?,?)''' % TableName, (v.name(), v.value(), Category, stateStr))
+        cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName, (v.name(), v.value(), Category, stateStr, KeyStr))
 
     except:
         print "Error in ReadSingleReg"
 
 
-def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr):
+def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr):
     reg = Registry.Registry(Hive)
     try:
         key = reg.open(regPath)
@@ -54,9 +54,9 @@ def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr):
     try:
         for value in [v for v in key.values()]:
             try:
-                cursor.execute('''INSERT INTO %s  (Name, Value, Category, State) VALUES(?,?,?,?)''' % TableName,[value.name(), value.value(), Category, stateStr])
+                cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName,[value.name(), value.value(), Category, stateStr, KeyStr])
             except:
-                cursor.execute('''INSERT INTO %s (Name, Value, Category, State) VALUES(?,?,?,?)''' % TableName,(value.name(), str(binascii.b2a_hex(value.raw_data())), Category, stateStr))
+                cursor.execute('''INSERT INTO %s (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName,(value.name(), str(binascii.b2a_hex(value.raw_data())), Category, stateStr, KeyStr))
 
     except:
         print"Error in ReadAllReg"

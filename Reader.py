@@ -75,9 +75,9 @@ class GUI(object):
 
 
     def StartExam(self):  # Order:(db, cursor, hive, TableName, regPath, Key, Category):
-        ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Typed Urls", "SubDir")  # Typed Paths
-        ReadAllReg(db, cursor, xbPath.get() + "\SYSTEM", "Info", "MountedDevices", "OS", "SubDir") #Mounted devices
-        ReadSingleReg(db, cursor, xbPath.get() + "\\SYSTEM", "Info", "Select", "Current", "OS", "Single")  # CurrentControlSet
+        ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Typed Urls", "SubDir", "Typed Urls")  # Typed Paths
+        ReadAllReg(db, cursor, xbPath.get() + "\SYSTEM", "Info", "MountedDevices", "OS", "SubDir", "Mounted Devices") #Mounted devices
+        ReadSingleReg(db, cursor, xbPath.get() + "\\SYSTEM", "Info", "Select", "Current", "OS", "Single", "Current Control Set")  # CurrentControlSet
 
     def _grid(self, master):
         self.StartExam()
@@ -103,9 +103,15 @@ class GUI(object):
         for row in all_rows:
             print('{0} : {1}, {2}, {3}'.format(row[0], row[1], row[2], row[3]))
             fo.writelines('{0} : {1}, {2}, {3}\r\n'.format(row[0], row[1], row[2], row[3]))
-            if row[3] == "OS":
-                self.tree.insert("dirOS", 0, text="Operating System information", values=(row[1], row[2]))
-            if row[3] == "Typed Urls":
+            if row[3] == "OS" and row[4] == "Single":
+                self.tree.insert("dirOS", 0, text=row[5], values=(row[1], row[2]))
+            elif row[3] == "OS" and row[4] == "SubDir":
+                try:
+                    self.tree.insert("dirOS", 3, row[5], open=False,text=row[5])
+                    self.tree.insert(row[5], 3, text="", values=(row[1], row[2]))
+                except:
+                    self.tree.insert(row[5], 3, text="", values=(row[1], row[2]))
+            elif row[3] == "Typed Urls":
                 #tree.heading('#0', text="name") CHANGE COLUMN HEADER!!!
                 try:
                     self.tree.insert("dirUser", 3, "dirURLS", open=False,text="Typed Urls")
@@ -129,7 +135,7 @@ class GUI(object):
 
 db = sqlite3.connect(":memory:")
 cursor = db.cursor()
-cursor.execute('''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT)''')
+cursor.execute('''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT)''')
 
 """
 # print "Mounted Devices:"

@@ -28,7 +28,7 @@ import binascii
 from Registry import Registry
 
 
-def ReadSingleReg(db, cursor, hive, TableName, regPath, Key, Category):
+def ReadSingleReg(db, cursor, hive, TableName, regPath, Key, Category, stateStr):
     reg = Registry.Registry(hive)
 
     try:
@@ -39,13 +39,13 @@ def ReadSingleReg(db, cursor, hive, TableName, regPath, Key, Category):
     try:
         k = reg.open(regPath)
         v = k.value(Key)
-        cursor.execute('''INSERT INTO %s  (Name, Value, Category) VALUES(?,?,?)''' % TableName, (v.name(), v.value(), Category))
+        cursor.execute('''INSERT INTO %s  (Name, Value, Category, State) VALUES(?,?,?,?)''' % TableName, (v.name(), v.value(), Category, stateStr))
 
     except:
         print "Error in ReadSingleReg"
 
 
-def ReadAllReg(db, cursor, Hive, TableName, regPath, Category):
+def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr):
     reg = Registry.Registry(Hive)
     try:
         key = reg.open(regPath)
@@ -54,9 +54,9 @@ def ReadAllReg(db, cursor, Hive, TableName, regPath, Category):
     try:
         for value in [v for v in key.values()]:
             try:
-                cursor.execute('''INSERT INTO %s  (Name, Value, Category) VALUES(?,?,?)''' % TableName,[value.name(), value.value(), Category])
+                cursor.execute('''INSERT INTO %s  (Name, Value, Category, State) VALUES(?,?,?,?)''' % TableName,[value.name(), value.value(), Category, stateStr])
             except:
-                cursor.execute('''INSERT INTO %s (Name, Value, Category) VALUES(?,?,?)''' % TableName,(value.name(), str(binascii.b2a_hex(value.raw_data())), Category))
+                cursor.execute('''INSERT INTO %s (Name, Value, Category, State) VALUES(?,?,?,?)''' % TableName,(value.name(), str(binascii.b2a_hex(value.raw_data())), Category, stateStr))
 
     except:
         print"Error in ReadAllReg"

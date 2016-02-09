@@ -75,9 +75,9 @@ class GUI(object):
 
 
     def StartExam(self):  # Order:(db, cursor, hive, TableName, regPath, Key, Category):
-        ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Typed Urls")  # Typed Paths
-        ReadAllReg(db, cursor, xbPath.get() + "\SYSTEM", "Info", "MountedDevices", "OS") #Mounted devices
-        ReadSingleReg(db, cursor, xbPath.get() + "\\SYSTEM", "Info", "Select", "Current", "OS")  # CurrentControlSet
+        ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "Typed Urls", "SubDir")  # Typed Paths
+        ReadAllReg(db, cursor, xbPath.get() + "\SYSTEM", "Info", "MountedDevices", "OS", "SubDir") #Mounted devices
+        ReadSingleReg(db, cursor, xbPath.get() + "\\SYSTEM", "Info", "Select", "Current", "OS", "Single")  # CurrentControlSet
 
     def _grid(self, master):
         self.StartExam()
@@ -129,7 +129,7 @@ class GUI(object):
 
 db = sqlite3.connect(":memory:")
 cursor = db.cursor()
-cursor.execute('''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT)''')
+cursor.execute('''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT)''')
 
 """
 # print "Mounted Devices:"

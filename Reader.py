@@ -107,7 +107,7 @@ class GUI(object):
             if row[3] == "OS" and row[4] == "Single":
                 self.tree.insert("dirOS", 0, text=row[5], values=(row[1], row[2]))
             elif row[3] == "OS" and row[4] == "SubDir":
-                try:
+                try: 
                     self.tree.insert("dirOS", 3, row[5], open=False,text=row[5])
                     self.tree.insert(row[5], 3, text="", values=(row[1], row[2]))
                 except:

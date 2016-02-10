@@ -67,10 +67,12 @@ class GUI(object):
 
     def OnClick(self, event): #When user expands a tree in treeview the columns are selected
         item = self.tree.selection()[0]
+        topChild = self.tree.parent(item)
+        for row in self.tree.get_children(): #function to close all nodes. broken. Sæt den til overmappen og luk kun enkelte
+            if row != topChild:
+                self.tree.item(row, open=False)
         if self.tree.item(item,"text") in ("User activities", "Operating System information", "Mounted Devices"): #The list of 'directories'
             self.tree["displaycolumns"]=("Keyname", "Keyvalue")
-           # for row in self.tree.get_children(): #function to close all nodes. broken. Sæt den til overmappen og luk kun enkelte
-            #    self.tree.item(row, open=False)
         else:
             print "Error. Value not in list"
 

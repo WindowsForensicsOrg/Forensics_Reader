@@ -68,10 +68,10 @@ class GUI(object):
     def OnClick(self, event): #When user expands a tree in treeview the columns are selected
         item = self.tree.selection()[0]
         topChild = self.tree.parent(item)
-        for row in self.tree.get_children(): #function to close all nodes. broken. Sæt den til overmappen og luk kun enkelte
+        for row in self.tree.get_children(): #function to close all nodes other than current.
             if row != topChild:
                 self.tree.item(row, open=False)
-        if self.tree.item(item,"text") in ("User activities", "Operating System information", "Mounted Devices"): #The list of 'directories'
+        if self.tree.item(item,"text") in ("User activities", "Operating System information", "Mounted Devices", "System Urls"): #The list of 'directories'
             self.tree["displaycolumns"]=("Keyname", "Keyvalue")
         else:
             print "Error. Value not in list"
@@ -99,10 +99,8 @@ class GUI(object):
         #tree.heading("one", text="ID")
         self.tree.heading("Keyname", text="Key Name",anchor=tk.W)
         self.tree.heading("Keyvalue", text="Key value",anchor=tk.W)
-        self.tree.insert("", 3, "testDir", open=False, text="test")
-        self.tree.insert("", 3, "dirReg", open=False, text="Registry Information")
-        self.tree.insert("dirReg", 3, "dirOS", open=False, text="Operating System information")
-        self.tree.insert("dirReg", 3, "dirUser",open=False, text="User activities")
+        self.tree.insert("", 3, "dirOS", open=False, text="Operating System information")
+        self.tree.insert("", 3, "dirUser",open=False, text="User activities")
         cursor.execute('''SELECT * FROM %s''' % "Info")
         all_rows = cursor.fetchall()
         fo = open("Info.txt", "wb")

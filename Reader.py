@@ -46,7 +46,7 @@ class GUI(object):
         tk.Canvas(frameXBH, borderwidth=0, relief="flat", height=1, width=800, background="#cccccc").grid(row=0,column=2,sticky="WE")
         tk.Label(frameN, text="Directory containing exported files:", font=fontReg).grid(row=1, sticky="W")
         global xbPath
-        xbPath = tk.Entry(frameN, text="hhe", width=30, font=fontReg)
+        xbPath = tk.Entry(frameN, text="CHANGE ME", width=30, font=fontReg)
         xbPath.grid(row=1, column=1, sticky="W")
         xbBrowse = tk.Button(frameN, text="Browse for folder", font=fontReg, command=lambda: self.get_dir(xbPath))
         xbBrowse.grid(row=1, column=2, sticky="W")
@@ -69,7 +69,7 @@ class GUI(object):
         item = self.tree.selection()[0]
         topChild = self.tree.parent(item)
         for row in self.tree.get_children(): #function to close all nodes other than current.
-            if row != topChild:
+            if topChild == "":
                 self.tree.item(row, open=False)
         if self.tree.item(item,"text") in ("User activities", "Operating System information", "Mounted Devices", "System Urls"): #The list of 'directories'
             self.tree["displaycolumns"]=("Keyname", "Keyvalue")
@@ -99,8 +99,11 @@ class GUI(object):
         #tree.heading("one", text="ID")
         self.tree.heading("Keyname", text="Key Name",anchor=tk.W)
         self.tree.heading("Keyvalue", text="Key value",anchor=tk.W)
-        self.tree.insert("", 3, "dirOS", open=False, text="Operating System information")
-        self.tree.insert("", 3, "dirUser",open=False, text="User activities")
+        self.tree.insert("", 0, "dirReg", open=False, text="Registry")
+        self.tree.insert("", 0, "test", open=False, text="Test")
+        self.tree.insert("test", 1, "gg", open=False, text=" information")
+        self.tree.insert("dirReg", 1, "dirOS", open=False, text="Operating System information")
+        self.tree.insert("dirReg", 2, "dirUser",open=False, text="User activities")
         cursor.execute('''SELECT * FROM %s''' % "Info")
         all_rows = cursor.fetchall()
         fo = open("Info.txt", "wb")

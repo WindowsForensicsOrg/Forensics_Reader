@@ -89,13 +89,22 @@ class GUI(object):
 
     def create_window(self, master):
         root = tk.Toplevel()
-        self.tree = ttk.Treeview(root)
         root.geometry("{0}x{1}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
+        root.overrideredirect(True)
+
+
+        self.tree = ttk.Treeview(root, height=35)
+        ysb = ttk.Scrollbar(root, orient='vertical', command=self.tree.yview)
+        xsb = ttk.Scrollbar(root, orient='horizontal', command=self.tree.xview)
+        self.tree.configure(yscroll=ysb.set, xscroll=xsb.set)
+        btnCancel1 = ttk.Button(root, text="Exit", width=20, command=lambda: self.cancel_btn())
+        btnCancel1.grid(row=2, column=0, sticky="W")
         self.tree["columns"] = ("Keyname", "Keyvalue")
-        #tree.column("one", width=100)
-        self.tree.column("#0", width=300) #First column
-        self.tree.column("Keyname",width=300)
-        self.tree.column("Keyvalue", width=2000 )
+        self.tree.column("#0", width=300, stretch=True) #First column
+        self.tree.column("Keyname",width=400, stretch=True)
+        self.tree.column("Keyvalue", width=800, stretch=True)
+        style = ttk.Style(root)
+        style.configure('Treeview', height=4000)
         #tree.heading("one", text="ID")
         self.tree.heading("Keyname", text="Key Name",anchor=tk.W)
         self.tree.heading("Keyvalue", text="Key value",anchor=tk.W)
@@ -107,9 +116,9 @@ class GUI(object):
         cursor.execute('''SELECT * FROM %s''' % "Info")
         all_rows = cursor.fetchall()
         fo = open("Info.txt", "wb")
-        for row in all_rows:  #TODO. Hvilke skridt skal udføres når der kommer andre ting ind over fx. linkfiler og eventfiler.
+        for row in all_rows:
             #TODO Husk at sortere i listerne i treeview så det ikke bliver 1, 10, 2, 20 osv
-            #TODO hust at lukke de andre dirs når et nyt bliver åbnet så du kan sætte de rigtige columns
+
             if isinstance(row[2], unicode): #binf.read().decode('utf-16').encode('utf-8')
                 try:
                     txtStr = row[2].decode('utf-16').encode('ascii')
@@ -139,6 +148,10 @@ class GUI(object):
                      self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
         self.tree.bind("<<TreeviewOpen>>", self.OnClick)
         self.tree.pack(expand=1, fill='both', side='bottom')
+        self.tree.grid(row=0, column=0)
+        ysb.grid(row=0, column=1, sticky='ns')
+        xsb.grid(row=1, column=0, sticky='ew')
+        self.tree.grid()
         fo.close()
         root.mainloop()
 

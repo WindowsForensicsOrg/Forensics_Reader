@@ -81,11 +81,11 @@ class GUI(object):
 
 
     def StartExam(self):  # Order:(db, cursor, hive, TableName, regPath,  Key, Category, single or subdir, text):
-        #ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir", "Typed Urls")  # Typed Paths
-        #ReadAllReg(db, cursor, xbPath.get() + "\\SOFTWARE", "Info", r"Microsoft\Windows NT\CurrentVersion", "OS", "SubDir", "Operating System Information")
-        #ReadAllReg(db, cursor, xbPath.get() + "\SYSTEM", "Info", "MountedDevices", "OS", "SubDir","Mounted Devices") #Mounted devices
-        #ReadSingleReg(db, cursor, xbPath.get() + "\\SYSTEM", "Info", "Select", "Current", "OS", "Single", "Current Control Set")  # CurrentControlSet
-        ReadAllRegSubdir(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU", "User", "SubDir", "Recent files (ComDlg32)")
+        ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir", "Typed Urls")  # Typed Paths
+        ReadAllReg(db, cursor, xbPath.get() + "\\SOFTWARE", "Info", r"Microsoft\Windows NT\CurrentVersion", "OS", "SubDir", "Operating System Information")
+        ReadAllReg(db, cursor, xbPath.get() + "\SYSTEM", "Info", "MountedDevices", "OS", "SubDir","Mounted Devices") #Mounted devices
+        ReadSingleReg(db, cursor, xbPath.get() + "\\SYSTEM", "Info", "Select", "Current", "OS", "Single", "Current Control Set")  # CurrentControlSet
+        ReadAllRegSubdir(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU", "User", "SubDirRec", "Recent files (ComDlg32)")
     def _grid(self, master):
         self.StartExam()
         self.create_window(master)
@@ -142,12 +142,27 @@ class GUI(object):
             if row[3] == "User" and row[4] == "Single":
                 self.tree.insert("dirUser", 0, text=row[5], values=(row[1], txtStr))
             elif row[3] == "User" and row[4] == "SubDir":
-                #tree.heading('#0', text="name") CHANGE COLUMN HEADER!!!
+
                 try:
                     self.tree.insert("dirUser", 3, row[5], open=False,text=row[5])
                     self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
                 except:
                      self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
+            elif row[4] == "SubDirRec":
+
+                try:
+                    self.tree.insert("dirUser", 3, row[5], open=False,text=row[5])
+                except:
+                    pass
+                if row[6] == "Folder":
+                    print "Folderrow" + row[1]
+                    self.tree.insert(row[5], 3, row[1], open=False,text=row[1])
+                if row[6] == "Key":
+                    print "roew" + row[7]
+                    self.tree.insert(row[7], 3, text="", values=(row[1], txtStr))
+
+
+
         self.tree.bind("<<TreeviewOpen>>", self.OnClick)
         self.tree.pack(expand=1, fill='both', side='bottom')
         self.tree.grid(row=0, column=0)
@@ -159,7 +174,7 @@ class GUI(object):
 
 db = sqlite3.connect(":memory:")
 cursor = db.cursor()
-cursor.execute('''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT)''')
+cursor.execute('''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT)''')
 
 def main():
     db.commit()

@@ -39,7 +39,7 @@ def ReadSingleReg(db, cursor, hive, TableName, regPath, Key, Category, stateStr,
     try:
         k = reg.open(regPath)
         v = k.value(Key)
-        cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName, (v.name(), v.value(), Category, stateStr, KeyStr))
+        cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName, (v.name(), v.value(), Category, stateStr, KeyStr,None,None))
 
     except:
         print "Error in ReadSingleReg"
@@ -55,25 +55,26 @@ def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr)
         for value in [v for v in key.values()]:
             try:
                 if value.name() == "InstallDate":
-                    cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName, [value.name(),ToUnix(value), Category, stateStr, KeyStr])
+                    cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName, [value.name(),ToUnix(value), Category, stateStr, KeyStr,None,None])
                 elif value.name() == "InstallTime":
-                    cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName, [value.name(),FiletimeToDateTime(value), Category, stateStr, KeyStr])
+                    cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName, [value.name(),FiletimeToDateTime(value), Category, stateStr, KeyStr,None,None])
                 else:
-                    cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName,[value.name(), value.value(), Category, stateStr, KeyStr])
+                    cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName,[value.name(), value.value(), Category, stateStr, KeyStr,None,None])
             except:
-                cursor.execute('''INSERT INTO %s (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName,(value.name(), str(binascii.b2a_hex(value.raw_data())), Category, stateStr, KeyStr))
+                cursor.execute('''INSERT INTO %s (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName,[value.name(), str(binascii.b2a_hex(value.raw_data())), Category, stateStr, KeyStr,None,None])
 
     except:
         print"Error in ReadAllReg"
 
 
-def rec(key, cursor, TableName, Category, stateStr, KeyStr):
-    print(key.path())
+def rec(key, cursor, TableName, Category, stateStr, KeyStr): #TODO husk at behandle data så det ikke bare er hex
+
     for subkey in key.subkeys():
-        print subkey.name()
+        print subkey.name() + "***"
+        cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName,[subkey.name(), "", Category, stateStr, KeyStr,"Folder", subkey.name()])
         for value in [v for v in subkey.values()]:
             print value.raw_data()
-            cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName,[value.name(), str(binascii.b2a_hex(value.raw_data())), Category, stateStr, KeyStr])
+            cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName,[value.name(), str(binascii.b2a_hex(value.raw_data())), Category, stateStr, KeyStr,"Key", subkey.name()])
     rec(subkey)
 
 def ReadAllRegSubdir(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr):
@@ -87,7 +88,7 @@ def ReadAllRegSubdir(db, cursor, Hive, TableName, regPath, Category, stateStr, K
 
 
     except:
-        print"Error in ReadAllReSubdirg"
+        print"Error in ReadAllRegSubdir"
 
 def FiletimeToDateTime(h):
     from filetimes import filetime_to_dt

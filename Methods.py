@@ -65,7 +65,26 @@ def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr)
 
     except:
         print"Error in ReadAllReg"
+def rec(key, db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr):
+    print(key.path())
+    for subkey in key.subkeys():
+        print subkey.name()
+        for value in [v for v in subkey.values()]:
+            print value.value()
+        rec(subkey)
 
+def ReadAllRegSubdir(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr):
+    reg = Registry.Registry(Hive)
+    try:
+        key = reg.open(regPath)
+    except Registry.RegistryKeyNotFoundException:
+        print "Couldn't find %s..." % regPath
+    try:
+        rec(key, db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr)
+
+
+    except:
+        print"Error in ReadAllReSubdirg"
 
 def FiletimeToDateTime(h):
     from filetimes import filetime_to_dt

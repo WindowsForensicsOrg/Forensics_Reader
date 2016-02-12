@@ -61,6 +61,9 @@ class GUI(object):
     def cancel_btn(self): #Cancel button
         raise SystemExit
 
+
+
+
     def get_dir(self, xbPath): #Pich folder containing files
         xbPath.delete(0, "end")
         xbPath.insert(1, askdirectory(mustexist=1, title="Please select folder containing exported files").replace("/", "\\"))
@@ -78,27 +81,26 @@ class GUI(object):
 
 
     def StartExam(self):  # Order:(db, cursor, hive, TableName, regPath,  Key, Category, single or subdir, text):
-        ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir", "Typed Urls")  # Typed Paths
-        ReadAllReg(db, cursor, xbPath.get() + "\\SOFTWARE", "Info", r"Microsoft\Windows NT\CurrentVersion", "OS", "SubDir", "Operating System Information")
-        ReadAllReg(db, cursor, xbPath.get() + "\SYSTEM", "Info", "MountedDevices", "OS", "SubDir", "Mounted Devices") #Mounted devices
-        ReadSingleReg(db, cursor, xbPath.get() + "\\SYSTEM", "Info", "Select", "Current", "OS", "Single", "Current Control Set")  # CurrentControlSet
-
+        #ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir", "Typed Urls")  # Typed Paths
+        #ReadAllReg(db, cursor, xbPath.get() + "\\SOFTWARE", "Info", r"Microsoft\Windows NT\CurrentVersion", "OS", "SubDir", "Operating System Information")
+        #ReadAllReg(db, cursor, xbPath.get() + "\SYSTEM", "Info", "MountedDevices", "OS", "SubDir", "Mounted Devices") #Mounted devices
+        #ReadSingleReg(db, cursor, xbPath.get() + "\\SYSTEM", "Info", "Select", "Current", "OS", "Single", "Current Control Set")  # CurrentControlSet
+        ReadAllRegSubdir(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU", "User", "SubDir", "Recent files (ComDlg32)")
     def _grid(self, master):
         self.StartExam()
         self.create_window(master)
-
+#SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU\*\1
     def create_window(self, master):
         root = tk.Toplevel()
         root.geometry("{0}x{1}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
         root.overrideredirect(True)
-
 
         self.tree = ttk.Treeview(root, height=35)
         ysb = ttk.Scrollbar(root, orient='vertical', command=self.tree.yview)
         xsb = ttk.Scrollbar(root, orient='horizontal', command=self.tree.xview)
         self.tree.configure(yscroll=ysb.set, xscroll=xsb.set)
         btnCancel1 = ttk.Button(root, text="Exit", width=20, command=lambda: self.cancel_btn())
-        btnCancel1.grid(row=2, column=0, sticky="W")
+        btnCancel1.grid(row=2, column=0, sticky="w")
         self.tree["columns"] = ("Keyname", "Keyvalue")
         self.tree.column("#0", width=300, stretch=True) #First column
         self.tree.column("Keyname",width=400, stretch=True)
@@ -119,7 +121,7 @@ class GUI(object):
         for row in all_rows:
             #TODO Husk at sortere i listerne i treeview så det ikke bliver 1, 10, 2, 20 osv
 
-            if isinstance(row[2], unicode): #binf.read().decode('utf-16').encode('utf-8')
+            if isinstance(row[2], unicode):
                 try:
                     txtStr = row[2].decode('utf-16').encode('ascii')
                     print('{0} : {1}, {2}, {3}'.format(row[0], row[1], txtStr, row[3]))

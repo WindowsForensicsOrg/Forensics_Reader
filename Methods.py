@@ -70,9 +70,9 @@ def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr)
 def rec(key, cursor, TableName, Category, stateStr, KeyStr):
     print(key.path())
     for subkey in key.subkeys():
-        cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName,[subkey.name(), "Parent", Category, stateStr, KeyStr])
+        print subkey.name()
         for value in [v for v in subkey.values()]:
-            #print value.raw_data()
+            print value.raw_data()
             cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName,[value.name(), str(binascii.b2a_hex(value.raw_data())), Category, stateStr, KeyStr])
     rec(subkey)
 

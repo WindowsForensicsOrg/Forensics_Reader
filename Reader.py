@@ -83,7 +83,7 @@ class GUI(object):
     def StartExam(self):  # Order:(db, cursor, hive, TableName, regPath,  Key, Category, single or subdir, text):
         #ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir", "Typed Urls")  # Typed Paths
         #ReadAllReg(db, cursor, xbPath.get() + "\\SOFTWARE", "Info", r"Microsoft\Windows NT\CurrentVersion", "OS", "SubDir", "Operating System Information")
-        #ReadAllReg(db, cursor, xbPath.get() + "\SYSTEM", "Info", "MountedDevices", "OS", "SubDir", "Mounted Devices") #Mounted devices
+        #ReadAllReg(db, cursor, xbPath.get() + "\SYSTEM", "Info", "MountedDevices", "OS", "SubDir","Mounted Devices") #Mounted devices
         #ReadSingleReg(db, cursor, xbPath.get() + "\\SYSTEM", "Info", "Select", "Current", "OS", "Single", "Current Control Set")  # CurrentControlSet
         ReadAllRegSubdir(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU", "User", "SubDir", "Recent files (ComDlg32)")
     def _grid(self, master):
@@ -159,7 +159,7 @@ class GUI(object):
 
 db = sqlite3.connect(":memory:")
 cursor = db.cursor()
-cursor.execute('''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT)''')
+cursor.execute('''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT)''')
 
 def main():
     db.commit()

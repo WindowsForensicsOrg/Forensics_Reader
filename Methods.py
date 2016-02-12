@@ -65,13 +65,16 @@ def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr)
 
     except:
         print"Error in ReadAllReg"
-def rec(key, db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr):
+
+
+def rec(key, cursor, TableName, Category, stateStr, KeyStr):
     print(key.path())
     for subkey in key.subkeys():
-        print subkey.name()
+        cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName,[subkey.name(), "Parent", Category, stateStr, KeyStr])
         for value in [v for v in subkey.values()]:
-            print value.value()
-        rec(subkey)
+            #print value.raw_data()
+            cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr) VALUES(?,?,?,?,?)''' % TableName,[value.name(), str(binascii.b2a_hex(value.raw_data())), Category, stateStr, KeyStr])
+    rec(subkey)
 
 def ReadAllRegSubdir(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr):
     reg = Registry.Registry(Hive)
@@ -80,7 +83,7 @@ def ReadAllRegSubdir(db, cursor, Hive, TableName, regPath, Category, stateStr, K
     except Registry.RegistryKeyNotFoundException:
         print "Couldn't find %s..." % regPath
     try:
-        rec(key, db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr)
+        rec(key, cursor, TableName, Category, stateStr, KeyStr)
 
 
     except:

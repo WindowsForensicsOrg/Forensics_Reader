@@ -79,8 +79,11 @@ class GUI(object):
         else:
             print "Error. Value not in list"
 
-
     def StartExam(self):  # Order:(db, cursor, hive, TableName, regPath,  Key, Category, single or subdir, text):
+
+        #TODO lav en metode til at generere egne registreringsnøgler. Idé ville være noget XML hejs, hvor man angiver hive, single/whole dir/whole dir and subdirs, regpath, og hvordan data skal fortolkes.
+        #TODO. Lav nedenstående kald som xml filer i en directory (Skal laves automatisk ved installation). Det er de xml filer, der skal genereres af den ovenstående wizard
+        #TODO lav en metode til at skanne et e01 image, angive en user og så selv hente de nødvendige filer ud.
         ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir", "Typed Urls")  # Typed Paths
         ReadAllReg(db, cursor, xbPath.get() + "\\SOFTWARE", "Info", r"Microsoft\Windows NT\CurrentVersion", "OS", "SubDir", "Operating System Information")
         ReadAllReg(db, cursor, xbPath.get() + "\SYSTEM", "Info", "MountedDevices", "OS", "SubDir","Mounted Devices") #Mounted devices
@@ -89,7 +92,7 @@ class GUI(object):
     def _grid(self, master):
         self.StartExam()
         self.create_window(master)
-#SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU\*\1
+
     def create_window(self, master):
         root = tk.Toplevel()
         root.geometry("{0}x{1}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))

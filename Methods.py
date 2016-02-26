@@ -66,6 +66,16 @@ def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr)
     except:
         print"Error in ReadAllReg"
 
+def read(s):
+    Len = 500
+    Filetext = ""
+    k=0
+    while k < (Len + 1):
+        a = s.Read(1)
+        if a != "0x00":
+            Filetext += a;
+	return s
+
 
 def rec(key, cursor, TableName, Category, stateStr, KeyStr): #TODO husk at behandle data så det ikke bare er hex
 
@@ -73,7 +83,8 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr): #TODO husk at behan
         print subkey.name() + "***"
         cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName,[subkey.name(), "", Category, stateStr, KeyStr,"Folder", subkey.name()])
         for value in [v for v in subkey.values()]:
-            print value.raw_data()
+            s= str(binascii.b2a_hex(value.raw_data()))
+            print binascii.unhexlify(s) + "##"
             cursor.execute('''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName,[value.name(), str(binascii.b2a_hex(value.raw_data())), Category, stateStr, KeyStr,"Key", subkey.name()])
     rec(subkey)
 

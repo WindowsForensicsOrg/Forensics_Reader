@@ -107,7 +107,7 @@ class GUI(object):
         self.tree["columns"] = ("Keyname", "Keyvalue")
         self.tree.column("#0", width=300, stretch=True) #First column
         self.tree.column("Keyname",width=400, stretch=True)
-        self.tree.column("Keyvalue", width=800, stretch=True)
+        self.tree.column("Keyvalue", width=800, stretch=False)
         style = ttk.Style(root)
         style.configure('Treeview', height=4000)
         #tree.heading("one", text="ID")

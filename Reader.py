@@ -97,7 +97,7 @@ class GUI(object):
         root = tk.Toplevel()
         root.geometry("{0}x{1}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
         root.overrideredirect(True)
-
+        root.grid_columnconfigure(0, weight=1)
         self.tree = ttk.Treeview(root, height=35)
         ysb = ttk.Scrollbar(root, orient='vertical', command=self.tree.yview)
         xsb = ttk.Scrollbar(root, orient='horizontal', command=self.tree.xview)
@@ -107,10 +107,9 @@ class GUI(object):
         self.tree["columns"] = ("Keyname", "Keyvalue")
         self.tree.column("#0", width=300, stretch=True) #First column
         self.tree.column("Keyname",width=400, stretch=True)
-        self.tree.column("Keyvalue", width=800, stretch=False)
+        self.tree.column("Keyvalue", width=11900, stretch=False)
         style = ttk.Style(root)
         style.configure('Treeview', height=4000)
-        #tree.heading("one", text="ID")
         self.tree.heading("Keyname", text="Key Name",anchor=tk.W)
         self.tree.heading("Keyvalue", text="Key value",anchor=tk.W)
         self.tree.insert("", 0, "dirReg", open=False, text="Registry")

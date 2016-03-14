@@ -139,7 +139,7 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):  # TODO husk at beh
 
                     elif blocktype == '3600':
                         print 'Found Filename - Unicode'
-
+                        # TODO Fix den her
                     # print 'Block start:\t', blockstart
                     # print 'Block type:\t', blocktype
                     # print 'Block length:\t', blocklength

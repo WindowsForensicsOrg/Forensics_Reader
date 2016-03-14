@@ -43,7 +43,9 @@ class GUI(object):
         frameXBH.grid(row=0, columnspan=5, padx=5)
         tk.Canvas(frameXBH, borderwidth=0, relief="flat", height=1, width=20, background="#cccccc").grid(row=0)
         tk.Label(frameXBH, text="Forensics Reader", font=fontBold, width=15).grid(row=0, column=1)
-        tk.Canvas(frameXBH, borderwidth=0, relief="flat", height=1, width=800, background="#cccccc").grid(row=0,column=2,sticky="WE")
+        tk.Canvas(frameXBH, borderwidth=0, relief="flat", height=1, width=800, background="#cccccc").grid(row=0,
+                                                                                                          column=2,
+                                                                                                          sticky="WE")
         tk.Label(frameN, text="Directory containing exported files:", font=fontReg).grid(row=1, sticky="W")
         global xbPath
         xbPath = tk.Entry(frameN, text="CHANGE ME", width=30, font=fontReg)
@@ -58,37 +60,40 @@ class GUI(object):
         btnCancel = tk.Button(frameN, text="Cancel", width=10, command=lambda: self.cancel_btn())
         btnCancel.grid(row=3, column=4, sticky="W")
 
-    def cancel_btn(self): #Cancel button
+    def cancel_btn(self):  # Cancel button
         raise SystemExit
 
-
-
-
-    def get_dir(self, xbPath): #Pich folder containing files
+    def get_dir(self, xbPath):  # Pich folder containing files
         xbPath.delete(0, "end")
-        xbPath.insert(1, askdirectory(mustexist=1, title="Please select folder containing exported files").replace("/", "\\"))
+        xbPath.insert(1, askdirectory(mustexist=1, title="Please select folder containing exported files").replace("/",
+                                                                                                                   "\\"))
 
-    def OnClick(self, event): #When user expands a tree in treeview the columns are selected
+    def OnClick(self, event):  # When user expands a tree in treeview the columns are selected
         item = self.tree.selection()[0]
         topChild = self.tree.parent(item)
-        for row in self.tree.get_children(): #function to close all nodes other than current.
+        for row in self.tree.get_children():  # function to close all nodes other than current.
             if topChild == "":
                 self.tree.item(row, open=False)
-        if self.tree.item(item,"text") in ("User activities", "Operating System information", "Mounted Devices", "System Urls"): #The list of 'directories'
-            self.tree["displaycolumns"]=("Keyname", "Keyvalue")
+        if self.tree.item(item, "text") in ("User activities", "Operating System information", "Mounted Devices",
+                                            "System Urls"):  # The list of 'directories'
+            self.tree["displaycolumns"] = ("Keyname", "Keyvalue")
         else:
             print "Error. Value not in list"
 
     def StartExam(self):  # Order:(db, cursor, hive, TableName, regPath,  Key, Category, single or subdir, text):
 
-        #TODO lav en metode til at generere egne registreringsnøgler. Idé ville være noget XML hejs, hvor man angiver hive, single/whole dir/whole dir and subdirs, regpath, og hvordan data skal fortolkes.
-        #TODO. Lav nedenstående kald som xml filer i en directory (Skal laves automatisk ved installation). Det er de xml filer, der skal genereres af den ovenstående wizard
-        #TODO lav en metode til at skanne et e01 image, angive en user og så selv hente de nødvendige filer ud.
-        ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir", "Typed Urls")  # Typed Paths
-        ReadAllReg(db, cursor, xbPath.get() + "\\SOFTWARE", "Info", r"Microsoft\Windows NT\CurrentVersion", "OS", "SubDir", "Operating System Information")
-        ReadAllReg(db, cursor, xbPath.get() + "\SYSTEM", "Info", "MountedDevices", "OS", "SubDir","Mounted Devices") #Mounted devices
-        ReadSingleReg(db, cursor, xbPath.get() + "\\SYSTEM", "Info", "Select", "Current", "OS", "Single", "Current Control Set")  # CurrentControlSet
-        ReadAllRegSubdir(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU", "User", "SubDirRec", "Recent files (ComDlg32)")
+        # TODO lav en metode til at generere egne registreringsnøgler. Idé ville være noget XML hejs, hvor man angiver hive, single/whole dir/whole dir and subdirs, regpath, og hvordan data skal fortolkes.
+        # TODO. Lav nedenstående kald som xml filer i en directory (Skal laves automatisk ved installation). Det er de xml filer, der skal genereres af den ovenstående wizard
+        # TODO lav en metode til at skanne et e01 image, angive en user og så selv hente de nødvendige filer ud.
+        # ReadAllReg(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir", "Typed Urls")  # Typed Paths
+        # ReadAllReg(db, cursor, xbPath.get() + "\\SOFTWARE", "Info", r"Microsoft\Windows NT\CurrentVersion", "OS", "SubDir", "Operating System Information")
+        # ReadAllReg(db, cursor, xbPath.get() + "\SYSTEM", "Info", "MountedDevices", "OS", "SubDir","Mounted Devices") #Mounted devices
+        # ReadSingleReg(db, cursor, xbPath.get() + "\\SYSTEM", "Info", "Select", "Current", "OS", "Single", "Current Control Set")  # CurrentControlSet
+
+        ReadAllRegSubdir(db, cursor, xbPath.get() + "\\NTUSER.DAT", "Info",
+                         r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU", "User",
+                         "SubDirRec", "Recent files (ComDlg32)")
+
     def _grid(self, master):
         self.StartExam()
         self.create_window(master)
@@ -105,23 +110,23 @@ class GUI(object):
         btnCancel1 = ttk.Button(root, text="Exit", width=20, command=lambda: self.cancel_btn())
         btnCancel1.grid(row=2, column=0, sticky="w")
         self.tree["columns"] = ("Keyname", "Keyvalue")
-        self.tree.column("#0", width=300, stretch=True) #First column
-        self.tree.column("Keyname",width=400, stretch=True)
-        self.tree.column("Keyvalue", width=11900, stretch=True)
+        self.tree.column("#0", width=300, stretch=True)  # First column
+        self.tree.column("Keyname", width=400, stretch=True)
+        self.tree.column("Keyvalue", minwidth=0, width=11900, stretch=True)
         style = ttk.Style(root)
         style.configure('Treeview', height=4000)
-        self.tree.heading("Keyname", text="Key Name",anchor=tk.W)
-        self.tree.heading("Keyvalue", text="Key value",anchor=tk.W)
+        self.tree.heading("Keyname", text="Key Name", anchor=tk.W)
+        self.tree.heading("Keyvalue", text="Key value", anchor=tk.W)
         self.tree.insert("", 0, "dirReg", open=False, text="Registry")
         self.tree.insert("", 0, "test", open=False, text="Test")
         self.tree.insert("test", 1, "gg", open=False, text=" information")
         self.tree.insert("dirReg", 1, "dirOS", open=False, text="Operating System information")
-        self.tree.insert("dirReg", 2, "dirUser",open=False, text="User activities")
+        self.tree.insert("dirReg", 2, "dirUser", open=False, text="User activities")
         cursor.execute('''SELECT * FROM %s''' % "Info")
         all_rows = cursor.fetchall()
         fo = open("Info.txt", "wb")
         for row in all_rows:
-            #TODO Husk at sortere i listerne i treeview så det ikke bliver 1, 10, 2, 20 osv
+            # TODO Husk at sortere i listerne i treeview så det ikke bliver 1, 10, 2, 20 osv
 
             if isinstance(row[2], unicode):
                 try:
@@ -130,13 +135,15 @@ class GUI(object):
                 except:
                     txtStr = row[2]
                     print('{0} : {1}, {2}, {3}'.format(row[0], row[1], txtStr, row[3]))
-
+            else:
+                import re
+                txtStr = re.sub("(.{64})", "\\1\n", txtStr, 0, re.DOTALL)
             fo.writelines('{0} : {1}, {2}, {3}\r\n'.format(row[0], row[1], txtStr, row[3]))
             if row[3] == "OS" and row[4] == "Single":
                 self.tree.insert("dirOS", 0, text=row[5], values=(row[1], txtStr))
             elif row[3] == "OS" and row[4] == "SubDir":
                 try:
-                    self.tree.insert("dirOS", 3, row[5], open=False,text=row[5])
+                    self.tree.insert("dirOS", 3, row[5], open=False, text=row[5])
 
                     self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
                 except:
@@ -146,24 +153,20 @@ class GUI(object):
             elif row[3] == "User" and row[4] == "SubDir":
 
                 try:
-                    self.tree.insert("dirUser", 3, row[5], open=False,text=row[5])
+                    self.tree.insert("dirUser", 3, row[5], open=False, text=row[5])
                     self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
                 except:
-                     self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
+                    self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
             elif row[4] == "SubDirRec":
-
                 try:
-                    self.tree.insert("dirUser", 3, row[5], open=False,text=row[5])
+                    self.tree.insert("dirUser", 3, row[5], open=False, text=row[5])
                 except:
                     pass
                 if row[6] == "Folder":
-                    print "Folderrow" + row[1]
-                    self.tree.insert(row[5], 3, row[1], open=False,text=row[1])
+                    self.tree.insert(row[5], 3, row[1], open=False, text=row[1])
                 if row[6] == "Key":
-                    print "roew" + row[7]
+                    # txtStr = binascii.unhexlify(txtStr)
                     self.tree.insert(row[7], 3, text="", values=(row[1], txtStr))
-
-
 
         self.tree.bind("<<TreeviewOpen>>", self.OnClick)
         self.tree.pack(expand=1, fill='both', side='bottom')
@@ -174,13 +177,17 @@ class GUI(object):
         fo.close()
         root.mainloop()
 
+
 db = sqlite3.connect(":memory:")
 cursor = db.cursor()
-cursor.execute('''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT)''')
+cursor.execute(
+    '''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT)''')
+
 
 def main():
     db.commit()
     db.close()
+
 
 if __name__ == "__main__":
     root = tk.Tk()

@@ -122,6 +122,10 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                         print str(temp)
                         filePath = str(temp)
 
+                    elif blocktype == '2f':
+                        # print 'Found Driveletter'
+                        driveletter = value.value()[blockstart + 3:blockstart + 6]
+                        filePath = path.join(filePath, driveletter)
 
                     elif blocktype == '31':
                         # print 'Found Diretory'

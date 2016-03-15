@@ -128,7 +128,6 @@ class GUI(object):
         all_rows = cursor.fetchall()
         fo = open("Info.txt", "wb")
         for row in all_rows:
-            # TODO Husk at sortere i listerne i treeview så det ikke bliver 1, 10, 2, 20 osv
 
             if isinstance(row[2], unicode):
                 try:

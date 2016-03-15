@@ -26,6 +26,7 @@
 import binascii
 import uuid
 from os import path
+import struct
 
 from Registry import Registry
 
@@ -95,24 +96,24 @@ def read(s):
 def rec(key, cursor, TableName, Category, stateStr, KeyStr):
 
     for subkey in key.subkeys():
-
+        # print key.timestamp() + " Timestamp"
         cursor.execute(
             '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName,
             [subkey.name(), "", Category, stateStr, KeyStr, "Folder", subkey.name()])
+
         blockstart = 0
         for value in [v for v in subkey.values()]:
-            print "timestamp %s %s" % (key.name(), key.timestamp())
             fileName = ""
             filePath = ""
             if value.name() == 'MRUListEx':
-                # TODO Sorter listerne efter mrulistex
+
                 print 'mrulist'
                 continue
             else:
 
-                # TODO Find drevbogstav hvis det er der
+                # TODO Find drevbogstav
                 while ord(value.value()[blockstart]) != 0:
-                    blocklength = ord(value.value()[blockstart])
+                    blocklength = struct.unpack('<h', value.value()[blockstart:blockstart + 2])[0]
                     blocktype = value.value()[blockstart + 2:blockstart + 4].encode('hex')
                     if blocktype == '1f50':
                         # print 'Found Root Folder'

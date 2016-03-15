@@ -115,22 +115,22 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                 while ord(value.value()[blockstart]) != 0:
                     # Blocklength as unsigned 16 bit int in little endian
                     blocklength = struct.unpack('<H', value.value()[blockstart:blockstart + 2])[0]
-                    blocktype = value.value()[blockstart + 2:blockstart + 4].encode('hex')
-                    if blocktype == '1f50':
+                    blocktype = value.value()[blockstart + 2].encode('hex')
+                    if blocktype == '1f':
                         # print 'Found Root Folder'
                         temp = rootfolder(value.value()[0:blocklength])
                         print str(temp)
                         filePath = str(temp)
 
 
-                    elif blocktype == '3100':
+                    elif blocktype == '31':
                         # print 'Found Diretory'
                         attr = dirnameascii(value.value()[blockstart:blockstart + blocklength])
                         for k, v in attr.iteritems():
                             print k, v
                             filePath = path.join(filePath,v)
 
-                    elif blocktype == '3200':
+                    elif blocktype == '32':
 
                         # print 'Found Filename'
                         attr = fnameascii(value.value()[blockstart:blockstart + blocklength])
@@ -139,9 +139,10 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                             fileName = v
                             filePath = path.join(filePath, fileName)
 
-                    elif blocktype == '3600':
+                    elif blocktype == '36':
                         print 'Found Filename - Unicode'
                         # TODO Find UNICODE NAVN
+                        # Er type 36 aktuel?
 
                     # print 'Block start:\t', blockstart
                     # print 'Block type:\t', blocktype

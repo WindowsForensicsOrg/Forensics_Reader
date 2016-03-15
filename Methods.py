@@ -113,7 +113,8 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
 
                 # TODO Find drevbogstav
                 while ord(value.value()[blockstart]) != 0:
-                    blocklength = struct.unpack('<h', value.value()[blockstart:blockstart + 2])[0]
+                    # Blocklength as unsigned 16 bit int in little endian
+                    blocklength = struct.unpack('<H', value.value()[blockstart:blockstart + 2])[0]
                     blocktype = value.value()[blockstart + 2:blockstart + 4].encode('hex')
                     if blocktype == '1f50':
                         # print 'Found Root Folder'
@@ -178,7 +179,10 @@ def parsebeefblock(beefblock):
     #  date1 = dostodate(date1inhex)
     #  date2 = dostodate(date2inhex)
     beefunicodename = beefunicodenameblock[:beefunicodenameblock.find(chr(0))]
+    # Parse file identifier (MFT) as unsigned 16 bit int in little endian
+    beefmftentry = struct.unpack('<H', beefblock[20:22])[0]
     beefcontent.append(beefunicodename)
+    beefcontent.append(beefmftentry)
     # beefcontent.append(date1)
     # beefcontent.append(date2)
     return beefcontent
@@ -195,6 +199,10 @@ def fnameascii(asciiblock):
         beefblock = asciiblock[beefstart:]
         beefparsed = parsebeefblock(beefblock)
         fileattr['\tFileUnicodeName:\t'] = beefparsed[0]
+        if beefparsed[1] == 0:
+            fileattr['\tMFTEntry:\t'] = 'N/A'
+        else:
+            fileattr['\tMFTEntry:\t'] = str(beefparsed[1])
     return fileattr
     # break
     #  fileattr['\tDate1:\t'] = beefparsed[1]

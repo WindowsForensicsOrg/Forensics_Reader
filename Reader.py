@@ -77,8 +77,6 @@ class GUI(object):
         if self.tree.item(item, "text") in ("User activities", "Operating System information", "Mounted Devices",
                                             "System Urls"):  # The list of 'directories'
             self.tree["displaycolumns"] = ("Keyname", "Keyvalue")
-        else:
-            print "Error. Value not in list"
 
     def StartExam(self):  # Order:(db, cursor, hive, TableName, regPath,  Key, Category, single or subdir, text):
 
@@ -170,7 +168,6 @@ class GUI(object):
                 if row[6] == "Folder":
                     self.tree.insert(row[5], 3, row[1], open=False, text=row[1])
                 if row[6] == "Key":
-                    # txtStr = binascii.unhexlify(txtStr)
                     self.tree.insert(row[7], 3, text="", values=(row[1], txtStr))
 
         self.tree.bind("<<TreeviewOpen>>", self.OnClick)

@@ -95,7 +95,7 @@ def read(s):
 def rec(key, cursor, TableName, Category, stateStr, KeyStr):
 
     for subkey in key.subkeys():
-
+        # print key.timestamp() + " Timestamp"
         cursor.execute(
             '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName,
             [subkey.name(), "", Category, stateStr, KeyStr, "Folder", subkey.name()])
@@ -109,19 +109,20 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                 print 'mrulist'
                 continue
             else:
+
                 # TODO Find drevbogstav
                 while ord(value.value()[blockstart]) != 0:
                     blocklength = ord(value.value()[blockstart])
                     blocktype = value.value()[blockstart + 2:blockstart + 4].encode('hex')
                     if blocktype == '1f50':
-                        print 'Found Root Folder'
+                        # print 'Found Root Folder'
                         temp = rootfolder(value.value()[0:blocklength])
                         print str(temp)
                         filePath = str(temp)
 
 
                     elif blocktype == '3100':
-                        print 'Found Diretory'
+                        # print 'Found Diretory'
                         attr = dirnameascii(value.value()[blockstart:blockstart + blocklength])
                         for k, v in attr.iteritems():
                             print k, v
@@ -129,7 +130,7 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
 
                     elif blocktype == '3200':
 
-                        print 'Found Filename'
+                        # print 'Found Filename'
                         attr = fnameascii(value.value()[blockstart:blockstart + blocklength])
                         for k, v in attr.iteritems():
                             print k, v
@@ -168,6 +169,47 @@ def rootfolder(rootblock):
     return rootfolderguid
 
 
+def parsebeefblock(beefblock):
+    beefcontent = []
+    # date1inhex = beefblock[8:12]
+    # date2inhex = beefblock[12:16]
+    beefunicodenameblock = beefblock[46:].decode('utf16')
+    #  date1 = dostodate(date1inhex)
+    #  date2 = dostodate(date2inhex)
+    beefunicodename = beefunicodenameblock[:beefunicodenameblock.find(chr(0))]
+    beefcontent.append(beefunicodename)
+    # beefcontent.append(date1)
+    # beefcontent.append(date2)
+    return beefcontent
+
+def fnameascii(asciiblock):
+    fileattr = {}
+    fnameblock = asciiblock[14:]
+    fname = fnameblock[:fnameblock.find(chr(0))]
+    # Check if beef block is inside asciiblock
+    # If found send beef block to function 'parsebeefblock'
+    if len(asciiblock[:14 + len(fname) + 3]) < len(asciiblock):
+        beefsigoffset = asciiblock.find('EFBE'.decode('hex'))
+        beefstart = beefsigoffset - 6
+        beefblock = asciiblock[beefstart:]
+        beefparsed = parsebeefblock(beefblock)
+        fileattr['\tFileUnicodeName:\t'] = beefparsed[0]
+    return fileattr
+    # break
+    #  fileattr['\tDate1:\t'] = beefparsed[1]
+    #  fileattr['\tDate2:\t'] = beefparsed[2]
+
+    # fsize_ascii = asciiblock[4:8]
+    # fdate_ascii = asciiblock[8:12]
+    # fsize = sizeinhextoint(fsize_ascii)
+    # fdate = dostodate(fdate_ascii)
+    fileattr['\tFilename:\t'] = fname
+    # fileattr['\tFilesize:\t'] = fsize
+    # fileattr['\tFiledate:\t'] = fdate
+    return fileattr
+
+
+"""
 def fnameascii(asciiblock):
     fileattr = {}
     fnameblock = asciiblock[14:]
@@ -178,17 +220,30 @@ def fnameascii(asciiblock):
     # fileattr['\tFilesize:\t'] = fsize.encode('hex')
     # fileattr['\tFiledate:\t'] = fdate.encode('hex')
     return fileattr
-
+"""
 
 def dirnameascii(dirblock):
     dirattr = {}
     dirnameblock = dirblock[14:]
     dirname = dirnameblock[:dirnameblock.find(chr(0))]
-    dirsize = dirblock[4:8]
-    dirdate = dirblock[8:12]
-    dirattr['\tDirectory name:\t'] = dirname
-    # dirattr['\tDirectory size:\t'] = dirsize.encode('hex')
-    #dirattr['\tDirectory date:\t'] = dirdate.encode('hex')
+    # Check if beef block is inside dirblock
+    # If found send beef block to function 'parsebeefblock'
+    if len(dirblock[:14 + len(dirname) + 3]) < len(dirblock):
+        beefsigoffset = dirblock.find('EFBE'.decode('hex'))
+        beefstart = beefsigoffset - 6
+        beefblock = dirblock[beefstart:]
+        beefparsed = parsebeefblock(beefblock)
+        dirattr['\tDirectoryUnicodeName:\t'] = beefparsed[0]
+    # dirattr['\tDate1:\t'] = beefparsed[1]
+    #    dirattr['\tDate2:\t'] = beefparsed[2]
+
+    # dirsize_ascii = dirblock[4:8]
+    # dirdate_ascii = dirblock[8:12]
+    # dirsize = sizeinhextoint(dirsize_ascii)
+    # dirdate = dostodate(dirdate_ascii)
+    # dirattr['\tDirectory name:\t'] = dirname
+    #  dirattr['\tDirectory size:\t'] = dirsize
+    #  dirattr['\tDirectory date:\t'] = dirdate
     return dirattr
 
 
@@ -203,7 +258,8 @@ def ReadAllRegSubdir(db, cursor, Hive, TableName, regPath, Category, stateStr, K
 
 
     except:
-        print"Error in ReadAllRegSubdir"
+        print "couldn't send to rec() (ReadAllRegSubdir)"
+        pass
 
 
 def FiletimeToDateTime(h):
@@ -224,7 +280,6 @@ def knownFolders(UUID):
     # TODO tjek hvorfor der ingen drevbogstver kommer og om alle bliver taget med.as
 
     UUID = "{" + str(UUID) + "}"
-    print UUID + "UUID"
     knownfolders = {
         "FOLDERGUID_MyComputer": "{20d04fe0-3aea-1069-a2d8-08002b30309d}",
         "FOLDERGUID_NetworkFolder": "{D20BEEC4-5CA8-4905-AE3B-BF251EA09B53}",

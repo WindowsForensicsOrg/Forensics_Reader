@@ -139,9 +139,10 @@ class GUI(object):
                 except:
                     txtStr = row[2]
                     print('{0} : {1}, {2}, {3}'.format(row[0], row[1], txtStr, row[3]))
-            else:
-                import re
-                txtStr = re.sub("(.{64})", "\\1\n", txtStr, 0, re.DOTALL)
+                    # TODO Implementer last_write på keys
+                    # else:
+                    # import re
+                    # txtStr = re.sub("(.{64})", "\\1\n", txtStr, 0, re.DOTALL)
             fo.writelines('{0} : {1}, {2}, {3}\r\n'.format(row[0], row[1], txtStr, row[3]))
             if row[3] == "OS" and row[4] == "Single":
                 self.tree.insert("dirOS", 0, text=row[5], values=(row[1], txtStr))

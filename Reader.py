@@ -145,27 +145,27 @@ class GUI(object):
                 self.tree.insert("dirOS", 0, text=row[5], values=(row[1], txtStr))
             elif row[3] == "OS" and row[4] == "SubDir":
                 try:
-                    self.tree.insert("dirOS", 3, row[5], open=False, text=row[5])
+                    self.tree.insert("dirOS", 3, row[5], open=False, text=row[5] + "\tLast write:" + row[8])
 
                     self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
                 except:
                     self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
             if row[3] == "User" and row[4] == "Single":
-                self.tree.insert("dirUser", 0, text=row[5], values=(row[1], txtStr))
+                self.tree.insert("dirUser", 0, text=row[5] + "\tLast write:" + [8], values=(row[1], txtStr))
             elif row[3] == "User" and row[4] == "SubDir":
 
                 try:
-                    self.tree.insert("dirUser", 3, row[5], open=False, text=row[5])
+                    self.tree.insert("dirUser", 3, row[5], open=False, text=row[5] + "\tLast write" + row[8])
                     self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
                 except:
                     self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
             elif row[4] == "SubDirRec":
                 try:
-                    self.tree.insert("dirUser", 3, row[5], open=False, text=row[5])
+                    self.tree.insert("dirUser", 3, row[5], open=False, text=row[5] + "\tLast write" + row[8])
                 except:
                     pass
                 if row[6] == "Folder":
-                    self.tree.insert(row[5], 3, row[1], open=False, text=row[1])
+                    self.tree.insert(row[5], 3, row[1], open=False, text=row[1] + "\tLast write" + row[8])
                 if row[6] == "Key":
                     self.tree.insert(row[7], 3, text="", values=(row[1], txtStr))
 
@@ -182,7 +182,7 @@ class GUI(object):
 db = sqlite3.connect(":memory:")
 cursor = db.cursor()
 cursor.execute(
-    '''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT)''')
+    '''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT, KeyTimeStamp TEXT)''')
 
 
 def main():

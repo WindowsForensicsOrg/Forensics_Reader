@@ -43,8 +43,8 @@ def ReadSingleReg(db, cursor, hive, TableName, regPath, Key, Category, stateStr,
         k = reg.open(regPath)
         v = k.value(Key)
         cursor.execute(
-            '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName,
-            (v.name(), v.value(), Category, stateStr, KeyStr, None, None))
+            '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
+            (v.name(), v.value(), Category, stateStr, KeyStr, None, None, key.timestamp()))
 
     except:
         print "Error in ReadSingleReg"
@@ -61,20 +61,22 @@ def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr)
             try:
                 if value.name() == "InstallDate":
                     cursor.execute(
-                        '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName,
-                        [value.name(), ToUnix(value), Category, stateStr, KeyStr, None, None])
+                        '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
+                        [value.name(), ToUnix(value), Category, stateStr, KeyStr, None, None, key.timestamp()])
                 elif value.name() == "InstallTime":
                     cursor.execute(
-                        '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName,
-                        [value.name(), FiletimeToDateTime(value), Category, stateStr, KeyStr, None, None])
+                        '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
+                        [value.name(), FiletimeToDateTime(value), Category, stateStr, KeyStr, None, None,
+                         key.timestamp()])
                 else:
                     cursor.execute(
-                        '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName,
-                        [value.name(), value.value(), Category, stateStr, KeyStr, None, None])
+                        '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
+                        [value.name(), value.value(), Category, stateStr, KeyStr, None, None, key.timestamp()])
             except:
                 cursor.execute(
-                    '''INSERT INTO %s (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName,
-                    [value.name(), str(binascii.b2a_hex(value.raw_data())), Category, stateStr, KeyStr, None, None])
+                    '''INSERT INTO %s (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
+                    [value.name(), str(binascii.b2a_hex(value.raw_data())), Category, stateStr, KeyStr, None, None,
+                     key.timestamp()])
 
     except:
         print"Error in ReadAllReg"
@@ -93,10 +95,10 @@ def read(s):
 def rec(key, cursor, TableName, Category, stateStr, KeyStr):
 
     for subkey in key.subkeys():
-        # print key.timestamp() + " Timestamp"
+
         cursor.execute(
-            '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName,
-            [subkey.name(), "", Category, stateStr, KeyStr, "Folder", subkey.name()])
+            '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent,KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
+            [subkey.name(), "", Category, stateStr, KeyStr, "Folder", subkey.name(), key.timestamp()])
 
         blockstart = 0
         for value in [v for v in subkey.values()]:
@@ -114,18 +116,18 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                     blocklength = struct.unpack('<H', value.value()[blockstart:blockstart + 2])[0]
                     blocktype = value.value()[blockstart + 2].encode('hex')
                     if blocktype == '1f':
-                        # print 'Found Root Folder'
+
                         temp = rootfolder(value.value()[0:blocklength])
                         print temp
                         filePath = temp
 
                     elif blocktype == '2f':
-                        # print 'Found Driveletter'
+
                         driveletter = value.value()[blockstart + 3:blockstart + 6]
                         filePath = path.join(filePath, driveletter)
 
                     elif blocktype == '31':
-                        # print 'Found Diretory'
+
                         attr = dirnameascii(value.value()[blockstart:blockstart + blocklength])
                         for k, v in attr.iteritems():
                             print k, v
@@ -133,7 +135,6 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
 
                     elif blocktype == '32':
 
-                        # print 'Found Filename'
                         attr = fnameascii(value.value()[blockstart:blockstart + blocklength])
                         for k, v in attr.iteritems():
                             print k, v
@@ -146,9 +147,9 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
 
             blockstart = 0
             cursor.execute(
-                '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent) VALUES(?,?,?,?,?,?,?)''' % TableName,
+                '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
                 [value.name(), filePath, Category, stateStr, KeyStr, "Key",
-                 subkey.name()])
+                 subkey.name(), key.timestamp()])
     rec(subkey)
 
 

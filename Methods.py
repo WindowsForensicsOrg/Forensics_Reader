@@ -201,7 +201,7 @@ def fnameascii(asciiblock):
         if beefparsed[1] == 0:
             fileattr['\tMFTEntry:\t'] = ''
         else:
-            fileattr['\tMFTEntry:\t'] = "\t\tMFT Entry of " + beefparsed[0] + ": " + str(beefparsed[1])
+            fileattr['\tMFTEntry:\t'] = "\t\tMFT Entry of " + '"' + beefparsed[0] + '"' + ": " + str(beefparsed[1])
     return fileattr
     # break
     #  fileattr['\tDate1:\t'] = beefparsed[1]

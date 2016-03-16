@@ -138,11 +138,8 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                         for k, v in attr.iteritems():
                             print k, v
                             fileName = v
-                            filePath = path.join(filePath, fileName)
+                            filePath = filePath + fileName
 
-                    # print 'Block start:\t', blockstart
-                    # print 'Block type:\t', blocktype
-                    # print 'Block length:\t', blocklength
                     blockstart = blockstart + blocklength
 
             blockstart = 0
@@ -200,6 +197,7 @@ def fnameascii(asciiblock):
             fileattr['\tMFTEntry:\t'] = ''
         else:
             fileattr['\tMFTEntry:\t'] = "\t\tMFT Entry of " + '"' + beefparsed[0] + '"' + ": " + str(beefparsed[1])
+
     return fileattr
     # break
     #  fileattr['\tDate1:\t'] = beefparsed[1]
@@ -214,20 +212,6 @@ def fnameascii(asciiblock):
     # fileattr['\tFiledate:\t'] = fdate
     return fileattr
 
-
-"""
-def fnameascii(asciiblock):
-    fileattr = {}
-    fnameblock = asciiblock[14:]
-    fname = fnameblock[:fnameblock.find(chr(0))]
-    fsize = asciiblock[4:8]
-    fdate = asciiblock[8:12]
-    fileattr['\tFilename:\t'] = fname
-    # fileattr['\tFilesize:\t'] = fsize.encode('hex')
-    # fileattr['\tFiledate:\t'] = fdate.encode('hex')
-    return fileattr
-"""
-
 def dirnameascii(dirblock):
     dirattr = {}
     dirnameblock = dirblock[14:]
@@ -240,16 +224,6 @@ def dirnameascii(dirblock):
         beefblock = dirblock[beefstart:]
         beefparsed = parsebeefblock(beefblock)
         dirattr['\tDirectoryUnicodeName:\t'] = beefparsed[0]
-    # dirattr['\tDate1:\t'] = beefparsed[1]
-    #    dirattr['\tDate2:\t'] = beefparsed[2]
-
-    # dirsize_ascii = dirblock[4:8]
-    # dirdate_ascii = dirblock[8:12]
-    # dirsize = sizeinhextoint(dirsize_ascii)
-    # dirdate = dostodate(dirdate_ascii)
-    # dirattr['\tDirectory name:\t'] = dirname
-    #  dirattr['\tDirectory size:\t'] = dirsize
-    #  dirattr['\tDirectory date:\t'] = dirdate
     return dirattr
 
 

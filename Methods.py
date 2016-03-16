@@ -116,8 +116,8 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                     if blocktype == '1f':
                         # print 'Found Root Folder'
                         temp = rootfolder(value.value()[0:blocklength])
-                        print str(temp)
-                        filePath = str(temp)
+                        print temp
+                        filePath = temp
 
                     elif blocktype == '2f':
                         # print 'Found Driveletter'
@@ -129,7 +129,7 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                         attr = dirnameascii(value.value()[blockstart:blockstart + blocklength])
                         for k, v in attr.iteritems():
                             print k, v
-                            filePath = path.join(filePath,v)
+                        filePath = path.join(filePath, v)
 
                     elif blocktype == '32':
 
@@ -137,8 +137,10 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                         attr = fnameascii(value.value()[blockstart:blockstart + blocklength])
                         for k, v in attr.iteritems():
                             print k, v
-                            fileName = v
-                            filePath = filePath + fileName
+                            fileName = attr['FileUnicodeName']
+                            print filePath + "XXX"
+                        filePath = path.join(filePath, fileName)
+                        filePath = str(filePath) + attr['MFTEntry']
 
                     blockstart = blockstart + blocklength
 
@@ -192,13 +194,12 @@ def fnameascii(asciiblock):
         beefstart = beefsigoffset - 6
         beefblock = asciiblock[beefstart:]
         beefparsed = parsebeefblock(beefblock)
-        fileattr['\tFileUnicodeName:\t'] = beefparsed[0]
+        fileattr['FileUnicodeName'] = beefparsed[0]
         if beefparsed[1] == 0:
-            fileattr['\tMFTEntry:\t'] = ''
+            fileattr['MFTEntry'] = ''
         else:
-            fileattr['\tMFTEntry:\t'] = "\t\tMFT Entry of " + '"' + beefparsed[0] + '"' + ": " + str(beefparsed[1])
-
-    return fileattr
+            fileattr['MFTEntry'] = "\t\tMFT Entry of " + '"' + beefparsed[0] + '"' + ": " + str(beefparsed[1])
+        return fileattr
     # break
     #  fileattr['\tDate1:\t'] = beefparsed[1]
     #  fileattr['\tDate2:\t'] = beefparsed[2]
@@ -207,7 +208,7 @@ def fnameascii(asciiblock):
     # fdate_ascii = asciiblock[8:12]
     # fsize = sizeinhextoint(fsize_ascii)
     # fdate = dostodate(fdate_ascii)
-    fileattr['\tFilename:\t'] = fname
+    fileattr['Filename'] = fname
     # fileattr['\tFilesize:\t'] = fsize
     # fileattr['\tFiledate:\t'] = fdate
     return fileattr

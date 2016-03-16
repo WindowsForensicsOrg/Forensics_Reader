@@ -176,10 +176,8 @@ def parsebeefblock(beefblock):
     #  date1 = dostodate(date1inhex)
     #  date2 = dostodate(date2inhex)
     beefunicodename = beefunicodenameblock[:beefunicodenameblock.find(chr(0))]
-    # Parse file identifier (MFT) as unsigned 16 bit int in little endian
-    # TODO Læs MFT som 6 bytes
-    # TODO Tjek op på MFT nr, om det er til mappe eller fil
-    beefmftentry = struct.unpack('<H', beefblock[20:22])[0]
+    # Parse file identifier (MFT) as 48 bit int in little endian
+    beefmftentry = int(''.join(reversed(beefblock[20:26])).encode('hex'), 16)
     beefcontent.append(beefunicodename)
     beefcontent.append(beefmftentry)
     # beefcontent.append(date1)

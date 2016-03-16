@@ -24,9 +24,9 @@
 # !/usr/bin/python
 
 import binascii
+import struct
 import uuid
 from os import path
-import struct
 
 from Registry import Registry
 
@@ -90,9 +90,6 @@ def read(s):
             Filetext += a
     return s
 
-
-# TODO Tænk over om du vil have MFT filerecord med og om du vil bruge dateringerne i de individuelle dirs til noget
-
 def rec(key, cursor, TableName, Category, stateStr, KeyStr):
 
     for subkey in key.subkeys():
@@ -111,7 +108,7 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                 continue
             else:
 
-                # TODO Find drevbogstav
+
                 while ord(value.value()[blockstart]) != 0:
                     # Blocklength as unsigned 16 bit int in little endian
                     blocklength = struct.unpack('<H', value.value()[blockstart:blockstart + 2])[0]
@@ -142,11 +139,6 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                             print k, v
                             fileName = v
                             filePath = path.join(filePath, fileName)
-
-                    elif blocktype == '36':
-                        print 'Found Filename - Unicode'
-                        # TODO Find UNICODE NAVN
-                        # Er type 36 aktuel?
 
                     # print 'Block start:\t', blockstart
                     # print 'Block type:\t', blocktype
@@ -186,6 +178,7 @@ def parsebeefblock(beefblock):
     beefunicodename = beefunicodenameblock[:beefunicodenameblock.find(chr(0))]
     # Parse file identifier (MFT) as unsigned 16 bit int in little endian
     # TODO Læs MFT som 6 bytes
+    # TODO Tjek op på MFT nr, om det er til mappe eller fil
     beefmftentry = struct.unpack('<H', beefblock[20:22])[0]
     beefcontent.append(beefunicodename)
     beefcontent.append(beefmftentry)
@@ -206,9 +199,9 @@ def fnameascii(asciiblock):
         beefparsed = parsebeefblock(beefblock)
         fileattr['\tFileUnicodeName:\t'] = beefparsed[0]
         if beefparsed[1] == 0:
-            fileattr['\tMFTEntry:\t'] = 'N/A'
+            fileattr['\tMFTEntry:\t'] = ''
         else:
-            fileattr['\tMFTEntry:\t'] = str(beefparsed[1])
+            fileattr['\tMFTEntry:\t'] = "\t\tMFT Entry: " + str(beefparsed[1])
     return fileattr
     # break
     #  fileattr['\tDate1:\t'] = beefparsed[1]
@@ -292,7 +285,6 @@ def ToUnix(value):
 
 
 def knownFolders(UUID):
-    # TODO tjek hvorfor der ingen drevbogstver kommer og om alle bliver taget med.as
 
     UUID = "{" + str(UUID) + "}"
     knownfolders = {

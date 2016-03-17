@@ -98,16 +98,32 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
 
         cursor.execute(
             '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent,KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
-            [subkey.name(), "", Category, stateStr, KeyStr, "Folder", subkey.name(), key.timestamp()])
+            [subkey.name(), "", Category, stateStr, KeyStr, "Folder", subkey.name(), subkey.timestamp()])
+        iFile = 0
 
         blockstart = 0
         for value in [v for v in subkey.values()]:
+
             fileName = ""
             filePath = ""
+            list1 = []
             if value.name() == 'MRUListEx':
 
-                print 'mrulist'
-                continue
+                print "MRUlistEX"
+
+                hex_chars = map(int, map(ord, value.value()))  # Read mrulistex
+                i = 0
+
+                for i, val in enumerate(hex_chars):  # remove '0'
+                    if val == 255:
+                        break
+                    if i == 0 or i % 4 == 0:  # The numbers are index 0 and every fourth thereafter
+                        list1.append(int(val))
+                        i = i + 1
+                    else:
+                        i = i+1
+
+
             else:
 
 
@@ -145,11 +161,15 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
 
                     blockstart = blockstart + blocklength
 
+
             blockstart = 0
             cursor.execute(
-                '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
+                '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, MRUOrder) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
                 [value.name(), filePath, Category, stateStr, KeyStr, "Key",
-                 subkey.name(), key.timestamp()])
+                 subkey.name(), key.timestamp(), iFile])
+
+            print "index is: ", list1.index(str(value.name()))
+            iFile = iFile+1
     rec(subkey)
 
 

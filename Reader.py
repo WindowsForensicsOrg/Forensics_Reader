@@ -124,7 +124,7 @@ class GUI(object):
         self.tree.insert("test", 1, "gg", open=False, text=" information")
         self.tree.insert("dirReg", 1, "dirOS", open=False, text="Operating System information")
         self.tree.insert("dirReg", 2, "dirUser", open=False, text="User activities")
-        cursor.execute('''SELECT * FROM %s''' % "Info")
+        cursor.execute('''SELECT * FROM %s ORDER BY MRUOrder''' % "Info")
         all_rows = cursor.fetchall()
         fo = open("Info.txt", "wb")
         for row in all_rows:
@@ -136,10 +136,7 @@ class GUI(object):
                 except:
                     txtStr = row[2]
                     print('{0} : {1}, {2}, {3}'.format(row[0], row[1], txtStr, row[3]))
-                    # TODO Implementer last_write på keys
-                    # else:
-                    # import re
-                    # txtStr = re.sub("(.{64})", "\\1\n", txtStr, 0, re.DOTALL)
+
             fo.writelines('{0} : {1}, {2}, {3}\r\n'.format(row[0], row[1], txtStr, row[3]))
             if row[3] == "OS" and row[4] == "Single":
                 self.tree.insert("dirOS", 0, text=row[5], values=(row[1], txtStr))
@@ -182,7 +179,8 @@ class GUI(object):
 db = sqlite3.connect(":memory:")
 cursor = db.cursor()
 cursor.execute(
-    '''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT, KeyTimeStamp TEXT)''')
+    '''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT, KeyTimeStamp TEXT, MRUOrder INTEGER)''')
+
 
 
 def main():

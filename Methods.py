@@ -26,9 +26,8 @@
 import binascii
 import struct
 import uuid
-from os import path
-
 from Registry import Registry
+from os import path
 
 
 def ReadSingleReg(db, cursor, hive, TableName, regPath, Key, Category, stateStr, KeyStr):
@@ -93,25 +92,25 @@ def read(s):
     return s
 
 def rec(key, cursor, TableName, Category, stateStr, KeyStr):
-
+    iFile = 0
     for subkey in key.subkeys():
-
+        list1 = []
         cursor.execute(
             '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent,KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
             [subkey.name(), "", Category, stateStr, KeyStr, "Folder", subkey.name(), subkey.timestamp()])
-        iFile = 0
+
 
         blockstart = 0
         for value in [v for v in subkey.values()]:
 
             fileName = ""
             filePath = ""
-            list1 = []
+
             if value.name() == 'MRUListEx':
 
                 print "MRUlistEX"
 
-                hex_chars = map(int, map(ord, value.value()))  # Read mrulistex
+                hex_chars = map(int, map(ord, (value.value())))  # Read mrulistex
                 i = 0
 
                 for i, val in enumerate(hex_chars):  # remove '0'
@@ -119,13 +118,13 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                         break
                     if i == 0 or i % 4 == 0:  # The numbers are index 0 and every fourth thereafter
                         list1.append(int(val))
+
                         i = i + 1
                     else:
                         i = i+1
-
-
+                   # print list1.index(val)
+                continue
             else:
-
 
                 while ord(value.value()[blockstart]) != 0:
                     # Blocklength as unsigned 16 bit int in little endian
@@ -158,18 +157,20 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                             print filePath + "XXX"
                         filePath = path.join(filePath, fileName)
                         filePath = str(filePath) + attr['MFTEntry']
-
                     blockstart = blockstart + blocklength
+            index =0
+            iFile = iFile+1
 
-
+            for p in list1: #print "www %d %s %d %d" % (int(p), value.name(),list1.index(int(value.name())), iFile)
+                index = list1.index(int(value.name()))
             blockstart = 0
             cursor.execute(
-                '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, MRUOrder) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
+                '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, MRUOrder, iFile) VALUES(?,?,?,?,?,?,?,?,?,?)''' % TableName,
                 [value.name(), filePath, Category, stateStr, KeyStr, "Key",
-                 subkey.name(), key.timestamp(), iFile])
+                 subkey.name(), key.timestamp(),int(index),int(iFile)])
 
-            print "index is: ", list1.index(str(value.name()))
-            iFile = iFile+1
+
+
     rec(subkey)
 
 
@@ -190,18 +191,12 @@ def rootfolder(rootblock):
 
 def parsebeefblock(beefblock):
     beefcontent = []
-    # date1inhex = beefblock[8:12]
-    # date2inhex = beefblock[12:16]
     beefunicodenameblock = beefblock[46:].decode('utf16')
-    #  date1 = dostodate(date1inhex)
-    #  date2 = dostodate(date2inhex)
     beefunicodename = beefunicodenameblock[:beefunicodenameblock.find(chr(0))]
     # Parse file identifier (MFT) as 48 bit int in little endian
     beefmftentry = int(''.join(reversed(beefblock[20:26])).encode('hex'), 16)
     beefcontent.append(beefunicodename)
     beefcontent.append(beefmftentry)
-    # beefcontent.append(date1)
-    # beefcontent.append(date2)
     return beefcontent
 
 def fnameascii(asciiblock):
@@ -221,17 +216,8 @@ def fnameascii(asciiblock):
         else:
             fileattr['MFTEntry'] = "\t\tMFT Entry of " + '"' + beefparsed[0] + '"' + ": " + str(beefparsed[1])
         return fileattr
-    # break
-    #  fileattr['\tDate1:\t'] = beefparsed[1]
-    #  fileattr['\tDate2:\t'] = beefparsed[2]
 
-    # fsize_ascii = asciiblock[4:8]
-    # fdate_ascii = asciiblock[8:12]
-    # fsize = sizeinhextoint(fsize_ascii)
-    # fdate = dostodate(fdate_ascii)
     fileattr['Filename'] = fname
-    # fileattr['\tFilesize:\t'] = fsize
-    # fileattr['\tFiledate:\t'] = fdate
     return fileattr
 
 def dirnameascii(dirblock):

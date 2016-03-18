@@ -100,6 +100,8 @@ class GUI(object):
         self.StartExam()
         self.create_window(master)
 
+
+
     def create_window(self, master):
         root = tk.Toplevel()
         root.geometry("{0}x{1}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))

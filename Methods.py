@@ -26,8 +26,9 @@
 import binascii
 import struct
 import uuid
-from Registry import Registry
 from os import path
+
+from Registry import Registry
 
 
 def ReadSingleReg(db, cursor, hive, TableName, regPath, Key, Category, stateStr, KeyStr):
@@ -98,81 +99,93 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
         cursor.execute(
             '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent,KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
             [subkey.name(), "", Category, stateStr, KeyStr, "Folder", subkey.name(), subkey.timestamp()])
-
-
         blockstart = 0
-        for value in [v for v in subkey.values()]:
+        successfull = False
 
+        while not successfull:
+            for value1 in [v for v in subkey.values()]:
+                if value1.name() == "MRUListEx":
+                     list1= recReg(list1, value1, successfull)
+                     successfull = True
+
+
+        for value in [v for v in subkey.values()]:
             fileName = ""
             filePath = ""
+            while ord(value.value()[blockstart]) != 0:
+                # Blocklength as unsigned 16 bit int in little endian
+                blocklength = struct.unpack('<H', value.value()[blockstart:blockstart + 2])[0]
+                blocktype = value.value()[blockstart + 2].encode('hex')
+                if blocktype == '1f':
 
-            if value.name() == 'MRUListEx':
+                    temp = rootfolder(value.value()[0:blocklength])
+                    print temp
+                    filePath = temp
 
-                print "MRUlistEX"
+                elif blocktype == '2f':
 
-                hex_chars = map(int, map(ord, (value.value())))  # Read mrulistex
-                i = 0
+                    driveletter = value.value()[blockstart + 3:blockstart + 6]
+                    filePath = path.join(filePath, driveletter)
 
-                for i, val in enumerate(hex_chars):  # remove '0'
-                    if val == 255:
-                        break
-                    if i == 0 or i % 4 == 0:  # The numbers are index 0 and every fourth thereafter
-                        list1.append(int(val))
+                elif blocktype == '31':
 
-                        i = i + 1
-                    else:
-                        i = i+1
-                   # print list1.index(val)
-                continue
-            else:
+                    attr = dirnameascii(value.value()[blockstart:blockstart + blocklength])
+                    for k, v in attr.iteritems():
+                        print k, v
+                    filePath = path.join(filePath, v)
 
-                while ord(value.value()[blockstart]) != 0:
-                    # Blocklength as unsigned 16 bit int in little endian
-                    blocklength = struct.unpack('<H', value.value()[blockstart:blockstart + 2])[0]
-                    blocktype = value.value()[blockstart + 2].encode('hex')
-                    if blocktype == '1f':
+                elif blocktype == '32':
 
-                        temp = rootfolder(value.value()[0:blocklength])
-                        print temp
-                        filePath = temp
+                    attr = fnameascii(value.value()[blockstart:blockstart + blocklength])
+                    for k, v in attr.iteritems():
+                        print k, v
+                        fileName = attr['FileUnicodeName']
+                        print filePath + "XXX"
+                    filePath = path.join(filePath, fileName)
+                    filePath = str(filePath) + attr['MFTEntry']
+                blockstart = blockstart + blocklength
+            indexnum = 0
 
-                    elif blocktype == '2f':
-
-                        driveletter = value.value()[blockstart + 3:blockstart + 6]
-                        filePath = path.join(filePath, driveletter)
-
-                    elif blocktype == '31':
-
-                        attr = dirnameascii(value.value()[blockstart:blockstart + blocklength])
-                        for k, v in attr.iteritems():
-                            print k, v
-                        filePath = path.join(filePath, v)
-
-                    elif blocktype == '32':
-
-                        attr = fnameascii(value.value()[blockstart:blockstart + blocklength])
-                        for k, v in attr.iteritems():
-                            print k, v
-                            fileName = attr['FileUnicodeName']
-                            print filePath + "XXX"
-                        filePath = path.join(filePath, fileName)
-                        filePath = str(filePath) + attr['MFTEntry']
-                    blockstart = blockstart + blocklength
-            index =0
-            iFile = iFile+1
 
             for p in list1: #print "www %d %s %d %d" % (int(p), value.name(),list1.index(int(value.name())), iFile)
-                index = list1.index(int(value.name()))
-            blockstart = 0
-            cursor.execute(
-                '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, MRUOrder, iFile) VALUES(?,?,?,?,?,?,?,?,?,?)''' % TableName,
-                [value.name(), filePath, Category, stateStr, KeyStr, "Key",
-                 subkey.name(), key.timestamp(),int(index),int(iFile)])
+                 i = str_to_int(value.name())
+                 if p == i:
+                     indexnum = list1.index(p)
+                     print "xyz %d %d" % (p, indexnum)
 
+            blockstart = 0
+            if value.name() != "MRUListEx":
+                cursor.execute(
+                '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, MRUOrder, iFile) VALUES(?,?,?,?,?,?,?,?,?,?)''' % TableName,
+                [value.name(), filePath, Category, stateStr, KeyStr, "Key",subkey.name(), key.timestamp(),indexnum,iFile])
+            iFile = iFile+1
 
 
     rec(subkey)
 
+def str_to_int(s):
+    ctr = i = 0
+    for c in reversed(s):
+        i += (ord(c) - 48) * (10 ** ctr)
+        ctr += 1
+    return i
+
+def recReg(list1, value, successfull):
+    print "In rec %s" % (value.name())
+    successfull = True
+    if value.name() == 'MRUListEx':
+        print "MRUlistEX in regrec"
+        hex_chars = map(int, map(ord, (value.value())))  # Read mrulistex
+        i = 0
+        for i, val in enumerate(hex_chars):  # remove '0'
+            if val == 255:
+                break
+            if i == 0 or i % 4 == 0:  # The numbers are index 0 and every fourth thereafter
+                list1.append(int(val))
+                i = i + 1
+            else:
+                i = i+1
+        return list1
 
 def str_to_guid(str):
     guidstr = str[3] + str[2] + \

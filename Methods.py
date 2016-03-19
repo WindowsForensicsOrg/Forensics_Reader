@@ -116,17 +116,22 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                 # Blocklength as unsigned 16 bit int in little endian
                 blocklength = struct.unpack('<H', value.value()[blockstart:blockstart + 2])[0]
                 blocktype = value.value()[blockstart + 2].encode('hex')
+
+                # Type 1f = system folder. E.g. My Computer, Downloads, My Music etc.
                 if blocktype == '1f':
 
                     temp = rootfolder(value.value()[0:blocklength])
                     print temp
                     filePath = temp
 
+                # Type 2f = Driveletter
                 elif blocktype == '2f':
 
                     driveletter = value.value()[blockstart + 3:blockstart + 6]
                     filePath = path.join(filePath, driveletter)
 
+                # Type 31 = Folder
+                # Type 31 blocks and type 32 blocks contain the same structure
                 elif blocktype == '31':
 
                     attr = dirnameascii(value.value()[blockstart:blockstart + blocklength])
@@ -134,6 +139,8 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                         print k, v
                     filePath = path.join(filePath, v)
 
+                # Type 32 = File
+                # Type 31 blocks and type 32 blocks contain the same structure
                 elif blocktype == '32':
 
                     attr = fnameascii(value.value()[blockstart:blockstart + blocklength])
@@ -197,6 +204,7 @@ def str_to_guid(str):
 
 
 def rootfolder(rootblock):
+    # Folder names are defined in the Software Hive - Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\
     rootfolderguid = str_to_guid(rootblock[4:20])
     rootfolderguid = knownFolders(rootfolderguid)
     return rootfolderguid

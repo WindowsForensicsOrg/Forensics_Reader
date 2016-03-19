@@ -112,55 +112,54 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
         for value in [v for v in subkey.values()]:
             fileName = ""
             filePath = ""
-            while ord(value.value()[blockstart]) != 0:
-                # Blocklength as unsigned 16 bit int in little endian
-                blocklength = struct.unpack('<H', value.value()[blockstart:blockstart + 2])[0]
-                blocktype = value.value()[blockstart + 2].encode('hex')
-                if blocktype == '1f':
-
-                    temp = rootfolder(value.value()[0:blocklength])
-                    print temp
-                    filePath = temp
-
-                elif blocktype == '2f':
-
-                    driveletter = value.value()[blockstart + 3:blockstart + 6]
-                    filePath = path.join(filePath, driveletter)
-
-                elif blocktype == '31':
-
-                    attr = dirnameascii(value.value()[blockstart:blockstart + blocklength])
-                    for k, v in attr.iteritems():
-                        print k, v
-                    filePath = path.join(filePath, v)
-
-                elif blocktype == '32':
-
-                    attr = fnameascii(value.value()[blockstart:blockstart + blocklength])
-                    for k, v in attr.iteritems():
-                        print k, v
-                        fileName = attr['FileUnicodeName']
-                        print filePath + "XXX"
-                    filePath = path.join(filePath, fileName)
-                    filePath = str(filePath) + attr['MFTEntry']
-                blockstart = blockstart + blocklength
-            indexnum = 0
-
-
-            for p in list1: #print "www %d %s %d %d" % (int(p), value.name(),list1.index(int(value.name())), iFile)
-                 i = str_to_int(value.name())
-                 if p == i:
-                     indexnum = list1.index(p)
-                     print "xyz %d %d" % (p, indexnum)
-
-            blockstart = 0
             if value.name() != "MRUListEx":
+                while ord(value.value()[blockstart]) != 0:
+                    # Blocklength as unsigned 16 bit int in little endian
+                    blocklength = struct.unpack('<H', value.value()[blockstart:blockstart + 2])[0]
+                    blocktype = value.value()[blockstart + 2].encode('hex')
+                    if blocktype == '1f':
+
+                        temp = rootfolder(value.value()[0:blocklength])
+                        print temp
+                        filePath = temp
+
+                    elif blocktype == '2f':
+
+                        driveletter = value.value()[blockstart + 3:blockstart + 6]
+                        filePath = path.join(filePath, driveletter)
+
+                    elif blocktype == '31':
+
+                        attr = dirnameascii(value.value()[blockstart:blockstart + blocklength])
+                        for k, v in attr.iteritems():
+                            print k, v
+                        filePath = path.join(filePath, v)
+
+                    elif blocktype == '32':
+
+                        attr = fnameascii(value.value()[blockstart:blockstart + blocklength])
+                        for k, v in attr.iteritems():
+                            print k, v
+                            fileName = attr['FileUnicodeName']
+                            print filePath + "XXX"
+                        filePath = path.join(filePath, fileName)
+                        filePath = str(filePath) + attr['MFTEntry']
+                    blockstart = blockstart + blocklength
+                indexnum = 0
+
+
+                for p in list1: #print "www %d %s %d %d" % (int(p), value.name(),list1.index(int(value.name())), iFile)
+                     i = str_to_int(value.name())
+                     if p == i:
+                         indexnum = list1.index(p)
+                         print "xyz %d %d" % (p, indexnum)
+
+                blockstart = 0
+
                 cursor.execute(
-                '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, MRUOrder, iFile) VALUES(?,?,?,?,?,?,?,?,?,?)''' % TableName,
-                [value.name(), filePath, Category, stateStr, KeyStr, "Key",subkey.name(), key.timestamp(),indexnum,iFile])
-            iFile = iFile+1
-
-
+                    '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, MRUOrder, iFile) VALUES(?,?,?,?,?,?,?,?,?,?)''' % TableName,
+                    [value.name(), filePath, Category, stateStr, KeyStr, "Key",subkey.name(), key.timestamp(),indexnum,iFile])
+                iFile = iFile+1
     rec(subkey)
 
 def str_to_int(s):

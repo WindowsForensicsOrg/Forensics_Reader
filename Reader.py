@@ -126,7 +126,7 @@ class GUI(object):
         self.tree.insert("test", 1, "gg", open=False, text=" information")
         self.tree.insert("dirReg", 1, "dirOS", open=False, text="Operating System information")
         self.tree.insert("dirReg", 2, "dirUser", open=False, text="User activities")
-        cursor.execute('''SELECT * FROM %s ORDER BY MRUOrder''' % "Info")
+        cursor.execute('''SELECT * FROM %s ORDER BY KeyParent,MRUOrder''' % "Info")
         all_rows = cursor.fetchall()
         fo = open("Info.txt", "wb")
         for row in all_rows:

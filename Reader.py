@@ -146,18 +146,18 @@ class GUI(object):
                 try:
                     self.tree.insert("dirOS", 3, row[5], open=False, text=row[5] + "\tLast write:" + row[8])
 
-                    self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
+                    self.tree.insert(row[5], 20, text="", values=(row[1], txtStr))
                 except:
-                    self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
+                    self.tree.insert(row[5], 20, text="", values=(row[1], txtStr))
             if row[3] == "User" and row[4] == "Single":
                 self.tree.insert("dirUser", 0, text=row[5] + "\tLast write:" + [8], values=(row[1], txtStr))
             elif row[3] == "User" and row[4] == "SubDir":
 
                 try:
                     self.tree.insert("dirUser", 3, row[5], open=False, text=row[5] + "\tLast write" + row[8])
-                    self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
+                    self.tree.insert(row[5], 20, text="", values=(row[1], txtStr))
                 except:
-                    self.tree.insert(row[5], 3, text="", values=(row[1], txtStr))
+                    self.tree.insert(row[5], 20, text="", values=(row[1], txtStr))
             elif row[4] == "SubDirRec":
                 try:
                     self.tree.insert("dirUser", 3, row[5], open=False, text=row[5] + "\tLast write" + row[8])
@@ -166,7 +166,8 @@ class GUI(object):
                 if row[6] == "Folder":
                     self.tree.insert(row[5], 3, row[1], open=False, text=row[1] + "\tLast write" + row[8])
                 if row[6] == "Key":
-                    self.tree.insert(row[7], 3, text="", values=(row[1], txtStr))
+                    print '{0} : {1}, {2}, {3}\r\n'.format(row[0], row[1], txtStr, row[3])
+                    self.tree.insert(row[7], 20, text="", values=(row[1], txtStr))
 
         self.tree.bind("<<TreeviewOpen>>", self.OnClick)
         self.tree.pack(expand=1, fill='both', side='bottom')

@@ -193,7 +193,7 @@ def str_to_guid(str):
               str[7] + str[6] + \
               str[8:16]
     return uuid.UUID(guidstr.encode('hex'))
-
+ 
 
 def rootfolder(rootblock):
     rootfolderguid = str_to_guid(rootblock[4:20])

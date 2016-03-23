@@ -70,13 +70,15 @@ class GUI(object):
 
     def OnClick(self, event):  # When user expands a tree in treeview the columns are selected
         item = self.tree.selection()[0]
-        topChild = self.tree.parent(item)
-        for row in self.tree.get_children():  # function to close all nodes other than current.
-            if topChild == "":
+        topChildFocus = self.tree.parent(item)
+       # topChild = self.tree.parent(item)
+        
+        for row in self.tree.get_children():  # function to close all nodes other than current.   
+            if topChildFocus == self.tree.parent(row):
                 self.tree.item(row, open=False)
-        if self.tree.item(item, "text") in ("User activities", "Operating System information", "Mounted Devices",
-                                            "System Urls"):  # The list of 'directories'
-            self.tree["displaycolumns"] = ("Keyname", "Keyvalue")
+        if self.tree.item(item, "text") in (    "Mounted Devices", "System Urls"):  # The list of 'directories'
+            self.tree["displaycolumns"] = ("Keyname", "Keyvalue", "Timestamp")
+ 
 
     def StartExam(self):  # Order:(db, cursor, hive, TableName, regPath,  Key, Category, single or subdir, text):
 
@@ -113,19 +115,21 @@ class GUI(object):
         self.tree.configure(yscroll=ysb.set, xscroll=xsb.set)
         btnCancel1 = ttk.Button(root, text="Exit", width=20, command=lambda: self.cancel_btn())
         btnCancel1.grid(row=2, column=0, sticky="w")
-        self.tree["columns"] = ("Keyname", "Keyvalue")
+        self.tree["columns"] = ("Timestamp", "Keyname", "Keyvalue", "MFT")
         self.tree.column("#0", width=300, stretch=True)  # First column
         self.tree.column("Keyname", width=400, stretch=True)
+        self.tree.column("Timestamp", width=400, stretch=True)
+        self.tree.column("MFT", width=400, stretch=True)
         self.tree.column("Keyvalue", minwidth=0, width=11900, stretch=True)
-        style = ttk.Style(root)
-        style.configure('Treeview', height=4000)
+        self.tree.insert("", 1, "dirSingle", open=False, text="Single values")
+        self.tree.heading("MFT", text="MFT Value", anchor=tk.W)
         self.tree.heading("Keyname", text="Key Name", anchor=tk.W)
         self.tree.heading("Keyvalue", text="Key value", anchor=tk.W)
-        self.tree.insert("", 0, "dirReg", open=False, text="Registry")
-        self.tree.insert("", 0, "test", open=False, text="Test")
-        self.tree.insert("test", 1, "gg", open=False, text=" information")
-        self.tree.insert("dirReg", 1, "dirOS", open=False, text="Operating System information")
-        self.tree.insert("dirReg", 2, "dirUser", open=False, text="User activities")
+        self.tree.heading("Timestamp", text="Last written", anchor=tk.W)
+        
+        style = ttk.Style(root)
+        style.configure('Treeview', height=4000)
+       
         cursor.execute('''SELECT * FROM %s ORDER BY KeyParent,MRUOrder''' % "Info")
         all_rows = cursor.fetchall()
         fo = open("Info.txt", "wb")
@@ -140,27 +144,27 @@ class GUI(object):
                     print('{0} : {1}, {2}, {3}'.format(row[0], row[1], txtStr, row[3]))
 
             fo.writelines('{0} : {1}, {2}, {3}\r\n'.format(row[0], row[1], txtStr, row[3]))
-            if row[3] == "OS" and row[4] == "Single":
-                self.tree.insert("dirOS", 'end', text=row[5], values=(row[1], txtStr))
-            elif row[3] == "OS" and row[4] == "SubDir":
+            if  row[4] == "Single":
+                self.tree.insert("dirSingle", 'end', text=row[5], values=(row[1], txtStr))
+            elif row[4] == "SubDir":
                 try:
-                    self.tree.insert("dirOS", 'end', row[5], open=False, text=row[5] + "\tLast write:" + row[8])
+                    self.tree.insert("", 'end', row[5], open=False, text=row[5] + "\tLast write:" + row[8])
 
                     self.tree.insert(row[5], 'end', text="", values=(row[1], txtStr))
                 except:
                     self.tree.insert(row[5], 'end', text="", values=(row[1], txtStr))
-            if row[3] == "User" and row[4] == "Single":
-                self.tree.insert("dirUser", 'end', text=row[5] + "\tLast write:" + [8], values=(row[1], txtStr))
-            elif row[3] == "User" and row[4] == "SubDir":
+            if row[3] == "" and row[4] == "Single":
+                self.tree.insert("", 'end', text=row[5] + "\tLast write:" + [8], values=(row[1], txtStr))
+            if row[3] == "" and row[4] == "SubDir":
 
                 try:
-                    self.tree.insert("dirUser", 'end', row[5], open=False, text=row[5] + "\tLast write" + row[8])
+                    self.tree.insert("", 'end', row[5], open=False, text=row[5] + "\tLast write" + row[8])
                     self.tree.insert(row[5], 'end', text="", values=(row[1], txtStr))
                 except:
                     self.tree.insert(row[5], 'end', text="", values=(row[1], txtStr))
             elif row[4] == "SubDirRec":
                 try:
-                    self.tree.insert("dirUser", 'end', row[5], open=False, text=row[5] + "\tLast write" + row[8])
+                    self.tree.insert("", 'end', row[5], open=False, text=row[5] + "\tLast write" + row[8])
                 except:
                     pass
                 if row[6] == "Folder":
@@ -181,8 +185,7 @@ class GUI(object):
 
 db = sqlite3.connect(":memory:")
 cursor = db.cursor()
-cursor.execute(
-    '''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT, KeyTimeStamp TEXT, MRUOrder INTEGER, iFile INTEGER)''')
+cursor.execute(    '''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT, KeyTimeStamp TEXT, MRUOrder INTEGER)''')
 
 
 

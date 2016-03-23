@@ -93,7 +93,7 @@ def read(s):
     return s
 
 def rec(key, cursor, TableName, Category, stateStr, KeyStr):
-    iFile = 0
+   
     for subkey in key.subkeys():
         list1 = []
         cursor.execute(
@@ -155,7 +155,7 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                 indexnum = 0
 
 
-                for p in list1: #print "www %d %s %d %d" % (int(p), value.name(),list1.index(int(value.name())), iFile)
+                for p in list1: #print "www %d %s %d %d" % (int(p), value.name(),list1.index(int(value.name())))
                      i = str_to_int(value.name())
                      if p == i:
                          indexnum = list1.index(p)
@@ -164,9 +164,9 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                 blockstart = 0
 
                 cursor.execute(
-                    '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, MRUOrder, iFile) VALUES(?,?,?,?,?,?,?,?,?,?)''' % TableName,
-                    [value.name(), filePath, Category, stateStr, KeyStr, "Key",subkey.name(), key.timestamp(),indexnum,iFile])
-                iFile = iFile+1
+                    '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, MRUOrder) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
+                    [value.name(), filePath, Category, stateStr, KeyStr, "Key",subkey.name(), key.timestamp(),indexnum])
+                
     rec(subkey)
 
 def str_to_int(s):

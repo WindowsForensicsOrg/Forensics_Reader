@@ -168,7 +168,8 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                     [value.name(), filePath, Category, stateStr, KeyStr, "Key",subkey.name(), key.timestamp(),indexnum])
     
   
-#Test coment 
+#Test coment
+#Test comment nr. 2
 def str_to_int(s):
     ctr = i = 0
     for c in reversed(s):

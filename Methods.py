@@ -170,6 +170,7 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
   
 #Test coment
 #Test comment nr. 2
+#Test comment nr. 3
 def str_to_int(s):
     ctr = i = 0
     for c in reversed(s):

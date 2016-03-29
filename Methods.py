@@ -167,9 +167,7 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                     '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, MRUOrder) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
                     [value.name(), filePath, Category, stateStr, KeyStr, "Key",subkey.name(), key.timestamp(),indexnum])
     
-    # Hvorfor er nedenstående indsat. Scriptet fungerer, selv om den er udkommenteret, og der kommer ikke nogen fejlmelding.
-    #rec(subkey)
-
+   
 def str_to_int(s):
     ctr = i = 0
     for c in reversed(s):

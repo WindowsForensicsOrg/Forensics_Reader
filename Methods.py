@@ -167,14 +167,15 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                     '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, MRUOrder) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
                     [value.name(), filePath, Category, stateStr, KeyStr, "Key",subkey.name(), key.timestamp(),indexnum])
     
-   
+  
+#Test coment 
 def str_to_int(s):
     ctr = i = 0
     for c in reversed(s):
         i += (ord(c) - 48) * (10 ** ctr)
         ctr += 1
     return i
-
+ 
 def recReg(list1, value, successfull):
     print "In rec %s" % (value.name())
     successfull = True

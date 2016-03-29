@@ -14,7 +14,7 @@ ui.setupUi(window)
 
 def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category, single or subdir, text):
     filename = QFileDialog.getExistingDirectory()
-
+    
     db = sqlite3.connect(":memory:")
     cursor = db.cursor()
     cursor.execute(    '''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT, KeyTimeStamp TEXT, MRUOrder INTEGER)''')

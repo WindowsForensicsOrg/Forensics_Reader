@@ -71,7 +71,25 @@ class Ui_Dialog(object):
         item = QtGui.QTableWidgetItem()
         self.TableWidget_OpenSavePidlMRU.setHorizontalHeaderItem(1, item)
         self.tabWidget.addTab(self.tab_3, _fromUtf8(""))
-        #End tab 3
+        #End tab 3 OpenSavePidlMRU
+        #Tab4 Mounted devices
+        self.tab_4 = QtGui.QWidget()
+        self.tab_4.setObjectName(_fromUtf8("tab_4"))
+        self.tableWidget_MountedDevices = QtGui.QTableWidget(self.tab_4)
+        self.tableWidget_MountedDevices.setGeometry(QtCore.QRect(0, 0, 931, 601))
+        self.tableWidget_MountedDevices.setObjectName(_fromUtf8("tableWidget_MountedDevices"))
+        self.tableWidget_MountedDevices.setColumnCount(10)
+        self.tableWidget_MountedDevices.setRowCount(0)
+        item = QtGui.QTableWidgetItem()
+        self.tableWidget_MountedDevices.setVerticalHeaderItem(0, item)
+        item = QtGui.QTableWidgetItem()
+        self.tableWidget_MountedDevices.setVerticalHeaderItem(1, item)
+        item = QtGui.QTableWidgetItem()
+        self.tableWidget_MountedDevices.setHorizontalHeaderItem(0, item)
+        item = QtGui.QTableWidgetItem()
+        self.tableWidget_MountedDevices.setHorizontalHeaderItem(1, item)
+        self.tabWidget.addTab(self.tab_4, _fromUtf8(""))
+        #End tab 4 mounted eevices
         self.splitter = QtGui.QSplitter(Dialog)
         self.splitter.setGeometry(QtCore.QRect(20, 650, 225, 23))
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
@@ -94,6 +112,11 @@ class Ui_Dialog(object):
         #Tab 3 OpenSavePidlMRU
         item = self.TableWidget_OpenSavePidlMRU.verticalHeaderItem(0)
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("Dialog", "OpenSavePidlMRU", None))
+        #End tab3
+        #Tab 4 mounteddevices
+        item = self.tableWidget_MountedDevices.verticalHeaderItem(0)
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("Dialog", "Mounted Devices", None))
+        #End tab4
         self.button_Start_Exam.setText(_translate("Dialog", "Start", None))
         self.button_Exit.setText(_translate("Dialog", "Exit", None))
 

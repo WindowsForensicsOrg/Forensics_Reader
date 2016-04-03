@@ -27,7 +27,7 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
                          r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU", "User",
                          "SubDirRec", "OpenSavePidlMRU")
 
-    #cursor.execute('''SELECT * FROM %s ORDER BY KeyParent,MRUOrder''' % "Info")
+    
     #Tab 2 Operating System Information
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Operating System Information"''').fetchone()[0]
     
@@ -49,7 +49,18 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
         for column, item in enumerate(form):
             if form[5] == "OpenSavePidlMRU":
                 ui.TableWidget_OpenSavePidlMRU.setItem(row1, column, QTableWidgetItem(str(item)))   
-    #End tab 2
+    #End tab 3
+     #Tab 4 mounted devices
+    rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Mounted Devices"''').fetchone()[0]
+    
+    ui.tableWidget_MountedDevices.setRowCount(rowcount)
+    ui.tableWidget_MountedDevices.setHorizontalHeaderLabels(QString("ID;Name;Value;Category;State;Keystr;RecString;KeyParent;KeyTimeStamp;MRUOrder").split(";"))
+    cursor.execute('''SELECT * FROM %s WHERE Keystr IS "Mounted Devices" ORDER BY Name''' % "Info")
+    for row1, form in enumerate(cursor):
+        for column, item in enumerate(form):
+            if form[5] == "Mounted Devices":
+                ui.tableWidget_MountedDevices.setItem(row1, column, QTableWidgetItem(str(item)))   
+    #End tab 4
 
 ui.button_Start_Exam.pressed.connect(StartExam)
 ui.button_Exit.pressed.connect(exit)

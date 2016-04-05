@@ -74,5 +74,5 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
 
 ui.button_Start_Exam.pressed.connect(StartExam)
 ui.button_Exit.pressed.connect(exit)
-window.show()
+window.showMaximized()
 sys.exit(app.exec_())

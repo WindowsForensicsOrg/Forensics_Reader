@@ -3,9 +3,9 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{a297e556-f64a-4302-bedd-353d31579954}</ProjectGuid>
+    <ProjectGuid>{c310877d-1741-436b-b104-599a366b1d6d}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>gui2test.py</StartupFile>
+    <StartupFile>Main.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -13,6 +13,7 @@
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <InterpreterId />
     <InterpreterVersion />
+    <Name>Forensics_Reader</Name>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
@@ -22,11 +23,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="filetimes.py" />
-    <Compile Include="forensicating.py" />
-    <Compile Include="gui2test.py" />
+    <Compile Include="Main.py" />
     <Compile Include="Methods.py" />
-    <Compile Include="Reader.py" />
-    <Compile Include="test2.py" />
+    <Compile Include="GUI.py" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />

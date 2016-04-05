@@ -69,9 +69,14 @@ def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr)
                         [value.name(), FiletimeToDateTime(value), Category, stateStr, KeyStr, None, None,
                          key.timestamp()])
                 else:
+                    mountedDevices_unicode = ['5f', '5c']
+                    if value.value()[0].encode('hex') in mountedDevices_unicode:
+                        value1 = value.value().decode('utf16')
+                    else:
+                        value1 = value.value()
                     cursor.execute(
                         '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
-                        [value.name(), value.value(), Category, stateStr, KeyStr, None, None, key.timestamp()])
+                        [value.name(), value1, Category, stateStr, KeyStr, None, None, key.timestamp()])
             except:
                 cursor.execute(
                     '''INSERT INTO %s (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,

@@ -25,7 +25,7 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     ReadSingleReg(db, cursor, filename + "\\SYSTEM", "Info", "Select", "Current", "OS", "Single", "Operating System Information")  # CurrentControlSet
     ReadAllRegSubdir(db, cursor, filename + "\\NTUSER.DAT", "Info",
                          r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU", "User",
-                         "SubDirRec", "OpenSavePidlMRU")
+                         "SubDirRec", "OpenSavePidlMRU") #OpenSavePidlMRU
 
     
     #Tab 2 Operating System Information
@@ -42,13 +42,13 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     #Tab 3 OpenSavePidlMRU
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "OpenSavePidlMRU"''').fetchone()[0]
     
-    ui.TableWidget_OpenSavePidlMRU.setRowCount(rowcount)
-    ui.TableWidget_OpenSavePidlMRU.setHorizontalHeaderLabels(QString("ID;Name;Value;Category;State;Keystr;RecString;KeyParent;KeyTimeStamp;MRUOrder").split(";"))
+    ui.tableWidget_OpenSavePidlMRU.setRowCount(rowcount)
+    ui.tableWidget_OpenSavePidlMRU.setHorizontalHeaderLabels(QString("ID;Name;Value;Category;State;Keystr;RecString;KeyParent;KeyTimeStamp;MRUOrder").split(";"))
     cursor.execute('''SELECT * FROM %s WHERE Keystr IS "OpenSavePidlMRU" ORDER BY KeyParent,MRUOrder''' % "Info")
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
             if form[5] == "OpenSavePidlMRU":
-                ui.TableWidget_OpenSavePidlMRU.setItem(row1, column, QTableWidgetItem(str(item)))   
+                ui.tableWidget_OpenSavePidlMRU.setItem(row1, column, QTableWidgetItem(str(item)))   
     #End tab 3
      #Tab 4 mounted devices
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Mounted Devices"''').fetchone()[0]

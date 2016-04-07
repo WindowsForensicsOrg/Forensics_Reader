@@ -68,9 +68,10 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     cursor.execute('''SELECT * FROM %s WHERE Keystr IS "Typed Paths" ORDER BY Name''' % "Info")
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
-            if form[5] == "Mounted Devices":
+            if form[5] == "Typed Paths":
                 ui.tableWidget_TypedPaths.setItem(row1, column, QTableWidgetItem(str(item)))   
-    #End tab mounted devices
+    #TODO Make it sort according to MRUListEx
+    #End tab TypedPaths
 
 ui.button_Start_Exam.pressed.connect(StartExam)
 ui.button_Exit.pressed.connect(exit)

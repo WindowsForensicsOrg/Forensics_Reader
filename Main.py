@@ -1,6 +1,6 @@
 import sys
 from PyQt4.QtGui import QApplication, QDialog
-from test2 import Ui_Dialog  # here you need to correct the names
+from GUI import Ui_Dialog  # here you need to correct the names
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os
@@ -35,7 +35,7 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     cursor.execute('''SELECT * FROM %s WHERE Keystr IS "Operating System Information" ORDER BY KeyParent,MRUOrder''' % "Info")
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
-            #if form[5] == "Operating System Information":
+            if form[5] == "Operating System Information":
                 ui.tableWidget_OS.setItem(row1, column, QTableWidgetItem(str(item)))   
     #End tab Operating System Information
     #Tab 3 OpenSavePidlMRU
@@ -46,7 +46,7 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     cursor.execute('''SELECT * FROM %s WHERE Keystr IS "OpenSavePidlMRU" ORDER BY KeyParent,MRUOrder''' % "Info")
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
-           # if form[5] == "OpenSavePidlMRU":
+            if form[5] == "OpenSavePidlMRU":
                 ui.tableWidget_OpenSavePidlMRU.setItem(row1, column, QTableWidgetItem(str(item)))   
     #End tab opensavepidlmru
     #Tab  mounted devices
@@ -57,7 +57,7 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     cursor.execute('''SELECT * FROM %s WHERE Keystr IS "Mounted Devices" ORDER BY Name''' % "Info")
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
-            #if form[5] == "Mounted Devices":
+            if form[5] == "Mounted Devices":
                 ui.tableWidget_MountedDevices.setItem(row1, column, QTableWidgetItem(str(item)))   
     #End tab mounted devices
     #Tab TypedPaths
@@ -68,7 +68,7 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     cursor.execute('''SELECT * FROM %s WHERE Keystr IS "Typed Paths" ORDER BY Name''' % "Info")
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
-            #if form[5] == "Mounted Devices":
+            if form[5] == "Mounted Devices":
                 ui.tableWidget_TypedPaths.setItem(row1, column, QTableWidgetItem(str(item)))   
     #End tab mounted devices
 

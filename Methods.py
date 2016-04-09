@@ -164,7 +164,7 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                      i = str_to_int(value.name())
                      if p == i:
                          indexnum = list1.index(p)
-                         print "xyz %d %d" % (p, indexnum)
+                         print "%d %d" % (p, indexnum)
 
                 blockstart = 0
 
@@ -266,6 +266,7 @@ def ReadAllRegSubdir(db, cursor, Hive, TableName, regPath, Category, stateStr, K
     except Registry.RegistryKeyNotFoundException:
         print "Couldn't find %s..." % regPath
     try:
+
         rec(key, cursor, TableName, Category, stateStr, KeyStr)
 
 

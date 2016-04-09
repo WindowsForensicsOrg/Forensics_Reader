@@ -35,8 +35,8 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     cursor.execute('''SELECT * FROM %s WHERE Keystr IS "Operating System Information" ORDER BY KeyParent,MRUOrder''' % "Info")
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
-            if form[5] == "Operating System Information":
-                ui.tableWidget_OS.setItem(row1, column, QTableWidgetItem(str(item)))   
+            #if form[5] == "Operating System Information":
+            ui.tableWidget_OS.setItem(row1, column, QTableWidgetItem(str(item)))   
     #End tab Operating System Information
     #Tab 3 OpenSavePidlMRU
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "OpenSavePidlMRU"''').fetchone()[0]
@@ -46,8 +46,8 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     cursor.execute('''SELECT * FROM %s WHERE Keystr IS "OpenSavePidlMRU" ORDER BY KeyParent,MRUOrder''' % "Info")
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
-            if form[5] == "OpenSavePidlMRU":
-                ui.tableWidget_OpenSavePidlMRU.setItem(row1, column, QTableWidgetItem(str(item)))   
+            #if form[5] == "OpenSavePidlMRU":
+            ui.tableWidget_OpenSavePidlMRU.setItem(row1, column, QTableWidgetItem(str(item)))   
     #End tab opensavepidlmru
     #Tab  mounted devices
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Mounted Devices"''').fetchone()[0]
@@ -57,8 +57,8 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     cursor.execute('''SELECT * FROM %s WHERE Keystr IS "Mounted Devices" ORDER BY Name''' % "Info")
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
-            if form[5] == "Mounted Devices":
-                ui.tableWidget_MountedDevices.setItem(row1, column, QTableWidgetItem(str(item)))   
+            #if form[5] == "Mounted Devices":
+            ui.tableWidget_MountedDevices.setItem(row1, column, QTableWidgetItem(str(item)))   
     #End tab mounted devices
     #Tab TypedPaths
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Typed Paths"''').fetchone()[0]
@@ -68,8 +68,8 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     cursor.execute('''SELECT * FROM %s WHERE Keystr IS "Typed Paths" ORDER BY Name''' % "Info")
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
-            if form[5] == "Typed Paths":
-                ui.tableWidget_TypedPaths.setItem(row1, column, QTableWidgetItem(str(item)))   
+            #if form[5] == "Typed Paths":
+            ui.tableWidget_TypedPaths.setItem(row1, column, QTableWidgetItem(str(item)))   
     #TODO Make it sort according to MRUListEx
     #End tab TypedPaths
 

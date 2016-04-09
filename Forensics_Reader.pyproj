@@ -21,13 +21,16 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="comDlg32.py" />
     <Compile Include="filetimes.py" />
     <Compile Include="GUI.py" />
+    <Compile Include="guids.py" />
     <Compile Include="Main.py" />
     <Compile Include="Methods.py" />
     <Compile Include="MRULIstExSort.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="shellitemBlocks.py" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />

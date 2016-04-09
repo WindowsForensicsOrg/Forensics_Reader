@@ -27,9 +27,8 @@ import binascii
 import struct
 import uuid
 from os import path
-
 from Registry import Registry
-
+from MRUListExSort import MRULIstExSort
 
 def ReadSingleReg(db, cursor, hive, TableName, regPath, Key, Category, stateStr, KeyStr):
     reg = Registry.Registry(hive)
@@ -110,7 +109,7 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
         while not successfull:
             for value1 in [v for v in subkey.values()]:
                 if value1.name() == "MRUListEx":
-                     list1= recReg(list1, value1, successfull)
+                     list1= MRULIstExSort(list1, value1, successfull)
                      successfull = True
 
 
@@ -180,22 +179,7 @@ def str_to_int(s):
         ctr += 1
     return i
  
-def recReg(list1, value, successfull):
-    print "In rec %s" % (value.name())
-    successfull = True
-    if value.name() == 'MRUListEx':
-        print "MRUlistEX in regrec"
-        hex_chars = map(int, map(ord, (value.value())))  # Read mrulistex
-        i = 0
-        for i, val in enumerate(hex_chars):  # remove '0'
-            if val == 255:
-                break
-            if i == 0 or i % 4 == 0:  # The numbers are index 0 and every fourth thereafter
-                list1.append(int(val))
-                i = i + 1
-            else:
-                i = i+1
-        return list1
+
 
 def str_to_guid(str):
     guidstr = str[3] + str[2] + \

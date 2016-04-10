@@ -42,7 +42,7 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
         for column, item in enumerate(form):
             #if form[5] == "Operating System Information":
              ui.tableWidget_OS.setItem(row1, column, QTableWidgetItem(str(item))) 
-  
+    ui.tableWidget_OS.resizeColumnsToContents()
     #End tab Operating System Information
     #Tab 3 OpenSavePidlMRU
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "OpenSavePidlMRU"''').fetchone()[0]
@@ -57,7 +57,8 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
                 ui.tableWidget_OpenSavePidlMRU.setItem(row1, column, QTableWidgetItem(str(item).decode('utf8')))
             else:
                 ui.tableWidget_OpenSavePidlMRU.setItem(row1, column, QTableWidgetItem(str(item)))  
-    #End tab opensavepidlmru
+    ui.tableWidget_OpenSavePidlMRU.resizeColumnsToContents()
+                #End tab opensavepidlmru
     #Tab  mounted devices
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Mounted Devices"''').fetchone()[0]
     
@@ -67,7 +68,8 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
             #if form[5] == "Mounted Devices":
-            ui.tableWidget_MountedDevices.setItem(row1, column, QTableWidgetItem(str(item)))   
+            ui.tableWidget_MountedDevices.setItem(row1, column, QTableWidgetItem(str(item))) 
+    ui.tableWidget_MountedDevices.resizeColumnsToContents()        
     #End tab mounted devices
     #Tab TypedPaths
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Typed Paths"''').fetchone()[0]
@@ -78,8 +80,8 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
             #if form[5] == "Typed Paths":
-            ui.tableWidget_TypedPaths.setItem(row1, column, QTableWidgetItem(str(item)))  
-    #End tab TypedPaths
+            ui.tableWidget_TypedPaths.setItem(row1, column, QTableWidgetItem(str(item)))
+    ui.tableWidget_TypedPaths.resizeColumnsToContents()    #End tab TypedPaths
 
 ui.button_Start_Exam.pressed.connect(StartExam)
 ui.button_Exit.pressed.connect(exit)

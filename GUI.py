@@ -100,6 +100,8 @@ class Ui_Dialog(object):
         self.tableWidget_OpenSavePidlMRU.setColumnCount(10)
         self.tableWidget_OpenSavePidlMRU.setObjectName(_fromUtf8("tableWidget_OpenSavePidlMRU"))
         self.tableWidget_OpenSavePidlMRU.setRowCount(0)
+        self.tableWidget_OpenSavePidlMRU.horizontalHeader().setStretchLastSection(True)
+        self.tableWidget_OpenSavePidlMRU.verticalHeader().setStretchLastSection(True)
         self.gridLayout_5.addWidget(self.tableWidget_OpenSavePidlMRU, 0, 0, 1, 1)
         self.tabWidget_UserAssist.addTab(self.tab_OpenSavePidMRU, _fromUtf8(""))
         self.tab_TypedPaths = QtGui.QWidget()
@@ -218,6 +220,7 @@ class Ui_Dialog(object):
         self.tableWidget_USB.setAutoFillBackground(True)
         self.tableWidget_USB.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.tableWidget_USB.setColumnCount(10)
+        self.tableWidget_USB.resizeColumnsToContents()
         self.tableWidget_USB.setObjectName(_fromUtf8("tableWidget_USB"))
         self.tableWidget_USB.setRowCount(0)
         self.gridLayout_12.addWidget(self.tableWidget_USB, 0, 0, 1, 1)
@@ -250,8 +253,8 @@ class Ui_Dialog(object):
         self.verticalLayout.addWidget(self.splitter)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(8)
-        self.tabWidget_UserAssist.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget_UserAssist.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):

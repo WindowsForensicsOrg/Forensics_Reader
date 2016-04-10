@@ -116,9 +116,10 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
     for subkey in key.subkeys():
         subkeyName = subkey.name()
         list1 = []
+        MFT = ''
         cursor.execute(
-            '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent,KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
-            [subkey.name(), "", Category, stateStr, KeyStr, "Folder", subkey.name(), subkey.timestamp()])
+            '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent,KeyTimeStamp,MFT) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
+            [subkey.name(), "", Category, stateStr, KeyStr, "Folder", subkey.name(), subkey.timestamp(), MFT])
         blockstart = 0
         successfull = False
 

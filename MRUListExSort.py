@@ -1,8 +1,8 @@
 def MRULIstExSort(list1, value, successfull):
-    print "In MRULIstExSort %s" % (value.name())
+   
     successfull = True
     if value.name() == 'MRUListEx':
-        print "MRUlistEX in regrec"
+       
         hex_chars = map(int, map(ord, (value.value())))  # Read mrulistex
         i = 0
         for i, val in enumerate(hex_chars):  # remove '0'

@@ -31,7 +31,7 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     ReadAllRegSubdir(db, cursor, filename + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU", "User",
                          "SubDirRec", "OpenSavePidlMRU") #OpenSavePidlMRU
 
-    
+    #Order: ID;Name;Value;Category;State;Keystr;RecString;KeyParent;KeyTimeStamp;MRUOrder;MRU
     #Tab 2 Operating System Information
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Operating System Information"''').fetchone()[0]
     
@@ -49,7 +49,7 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     
     ui.tableWidget_OpenSavePidlMRU.setRowCount(rowcount)
     ui.tableWidget_OpenSavePidlMRU.setHorizontalHeaderLabels(QString("Name;Value;KeyTimeStamp;MFT Number").split(";"))
-    cursor.execute('''SELECT  Name,Value,KeyTimeStamp, MFT FROM %s WHERE Keystr IS "OpenSavePidlMRU" ORDER BY KeyParent,MRUOrder''' % "Info")
+    cursor.execute('''SELECT  Name,Value,KeyTimeStamp, MFT, RecString FROM %s WHERE Keystr IS "OpenSavePidlMRU" ORDER BY KeyParent,MRUOrder''' % "Info")
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
             #if form[5] == "OpenSavePidlMRU":

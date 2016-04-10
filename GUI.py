@@ -63,7 +63,7 @@ class Ui_Dialog(object):
         self.tableWidget_OS.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.tableWidget_OS.setAutoFillBackground(True)
         self.tableWidget_OS.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        self.tableWidget_OS.setColumnCount(3)
+        self.tableWidget_OS.setColumnCount(4)
         self.tableWidget_OS.setObjectName(_fromUtf8("tableWidget_OS"))
         self.tableWidget_OS.setRowCount(0)
         self.gridLayout.addWidget(self.tableWidget_OS, 0, 0, 1, 1)
@@ -97,7 +97,7 @@ class Ui_Dialog(object):
         self.tableWidget_OpenSavePidlMRU = QtGui.QTableWidget(self.tab_OpenSavePidMRU)
         self.tableWidget_OpenSavePidlMRU.setAutoFillBackground(True)
         self.tableWidget_OpenSavePidlMRU.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        self.tableWidget_OpenSavePidlMRU.setColumnCount(3)
+        self.tableWidget_OpenSavePidlMRU.setColumnCount(4)
         self.tableWidget_OpenSavePidlMRU.setObjectName(_fromUtf8("tableWidget_OpenSavePidlMRU"))
         self.tableWidget_OpenSavePidlMRU.setRowCount(0)
         self.tableWidget_OpenSavePidlMRU.horizontalHeader().setStretchLastSection(True)
@@ -252,8 +252,8 @@ class Ui_Dialog(object):
         self.verticalLayout.addWidget(self.splitter)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(1)
-        self.tabWidget_UserAssist.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget_UserAssist.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):

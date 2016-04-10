@@ -20,7 +20,7 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     db.text_factory = str
     cursor = db.cursor()
 
-    cursor.execute(    '''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT, KeyTimeStamp TEXT, MRUOrder INTEGER)''')
+    cursor.execute(    '''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT, KeyTimeStamp TEXT, MRUOrder INTEGER, MFT INTEGER)''')
     
 
     ReadAllReg(db, cursor, filename + "\\NTUSER.DAT", "Info",
@@ -48,8 +48,8 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "OpenSavePidlMRU"''').fetchone()[0]
     
     ui.tableWidget_OpenSavePidlMRU.setRowCount(rowcount)
-    ui.tableWidget_OpenSavePidlMRU.setHorizontalHeaderLabels(QString("Name;Value;KeyTimeStamp").split(";"))
-    cursor.execute('''SELECT  Name,Value,KeyTimeStamp FROM %s WHERE Keystr IS "OpenSavePidlMRU" ORDER BY KeyParent,MRUOrder''' % "Info")
+    ui.tableWidget_OpenSavePidlMRU.setHorizontalHeaderLabels(QString("Name;Value;KeyTimeStamp;MFT Number").split(";"))
+    cursor.execute('''SELECT  Name,Value,KeyTimeStamp, MFT FROM %s WHERE Keystr IS "OpenSavePidlMRU" ORDER BY KeyParent,MRUOrder''' % "Info")
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
             #if form[5] == "OpenSavePidlMRU":

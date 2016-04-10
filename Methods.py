@@ -131,10 +131,11 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
         
         for value in [v for v in subkey.values()]:
             if value.name() != "MRUListEx":
-                comDlg = openSavePidlMRU(value, subkeyName)
-                print comDlg
-                #TODO Fix unicode
-                filePath = comDlg[0].encode('utf8')
+                list1 = openSavePidlMRU(value, subkeyName)
+                
+                MFT = list1[1]
+                
+                filePath = list1[0]
                 indexnum = 0
 
 
@@ -147,8 +148,8 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                 blockstart = 0
 
                 cursor.execute(
-                    '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, MRUOrder) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
-                    [value.name(), filePath, Category, stateStr, KeyStr, "Key",subkey.name(), key.timestamp(),indexnum])
+                    '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, MRUOrder, MFT) VALUES(?,?,?,?,?,?,?,?,?,?)''' % TableName,
+                    [value.name(), filePath, Category, stateStr, KeyStr, "Key",subkey.name(), key.timestamp(),indexnum, MFT])
     
 
 def str_to_int(s):

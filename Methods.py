@@ -132,9 +132,9 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
         for value in [v for v in subkey.values()]:
             if value.name() != "MRUListEx":
                 comDlg = openSavePidlMRU(value, subkeyName)
-                print comDlg
-                #TODO Fix unicode
                 filePath = comDlg[0].encode('utf8')
+                #TODO create column for mft in GUI
+                mft = comDlg[1]
                 indexnum = 0
 
 

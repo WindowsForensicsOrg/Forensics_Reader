@@ -1,7 +1,8 @@
 import sys
-from PyQt4.QtGui import QApplication, QDialog
+import struct
 from GUI import Ui_Dialog  # here you need to correct the names
-from PyQt4.QtCore import *
+from PyQt4.QtCore import * 
+import PyQt4.QtCore as QtCore
 from PyQt4.QtGui import *
 import os
 import sqlite3
@@ -16,8 +17,12 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     filename = QFileDialog.getExistingDirectory()
 
     db = sqlite3.connect(":memory:")
+    db.text_factory = str
     cursor = db.cursor()
+
     cursor.execute(    '''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT, KeyTimeStamp TEXT, MRUOrder INTEGER)''')
+    
+
     ReadAllReg(db, cursor, filename + "\\NTUSER.DAT", "Info",
                    r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir","Typed Paths")  # Typed Paths
     ReadAllReg(db, cursor, filename + "\\SOFTWARE", "Info", r"Microsoft\Windows NT\CurrentVersion", "OS", "SubDir", "Operating System Information")
@@ -69,11 +74,10 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
             #if form[5] == "Typed Paths":
-            ui.tableWidget_TypedPaths.setItem(row1, column, QTableWidgetItem(str(item)))   
-    #TODO Make it sort according to MRUListEx
+            ui.tableWidget_TypedPaths.setItem(row1, column, QTableWidgetItem(str(item)))  
     #End tab TypedPaths
 
 ui.button_Start_Exam.pressed.connect(StartExam)
 ui.button_Exit.pressed.connect(exit)
-window.showMaximized()
+window.show()#showMaximized()
 sys.exit(app.exec_())

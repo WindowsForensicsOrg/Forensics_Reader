@@ -57,7 +57,7 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
                 ui.tableWidget_OpenSavePidlMRU.setItem(row1, column, QTableWidgetItem(str(item).decode('utf8')))
             else:
                 ui.tableWidget_OpenSavePidlMRU.setItem(row1, column, QTableWidgetItem(str(item)))  
-    ui.tableWidget_OpenSavePidlMRU.resizeColumnsToContents()
+    ui.tableWidget_OpenSavePidlMRU.resizeColumnsToContents() # fit columns to content
                 #End tab opensavepidlmru
     #Tab  mounted devices
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Mounted Devices"''').fetchone()[0]

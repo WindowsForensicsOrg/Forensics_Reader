@@ -73,7 +73,8 @@ def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr)
                     if value.value()[0].encode('hex') in mountedDevices_unicode:
                         value1 = value.value().decode('utf16')
                     else:
-                        value1 = value.value()
+                       #value1 = value.raw_value() Denne gør man kan se signature + startsector stringen korrekt  value1 = value.raw_value(). Men ikke andet,
+                       value1 = value.value() #Der skal laves nogle tjek for om det er ascii eller lignende gejl
                     cursor.execute(
                         '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
                         [value.name(), value1, Category, stateStr, KeyStr, None, None, key.timestamp()])

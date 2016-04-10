@@ -28,7 +28,7 @@ import struct
 import uuid
 from os import path
 from Registry import Registry
-from MRUListExSort import MRULIstExSort
+from MRULIstExSort import MRULIstExSort
 from comDlg32 import openSavePidlMRU
 
 def ReadSingleReg(db, cursor, hive, TableName, regPath, Key, Category, stateStr, KeyStr):
@@ -48,21 +48,7 @@ def ReadSingleReg(db, cursor, hive, TableName, regPath, Key, Category, stateStr,
 
     except:
         print "Error in ReadSingleReg"
-def clean(item):
-    """Clean up the memory by closing and deleting the item if possible."""
-    if isinstance(item, list) or isinstance(item, dict):
-        for _ in range(len(item)):
-            clean(item.pop())
-    else:
-        try:
-            item.close()
-        except (RuntimeError, AttributeError): # deleted or no close method
-            pass
-        try:
-            item.deleteLater()
-        except (RuntimeError, AttributeError): # deleted or no deleteLater method
-            pass
-# end cleanUp
+
 
 def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr):
     reg = Registry.Registry(Hive)
@@ -126,17 +112,17 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
         while not successfull:
             for value1 in [v for v in subkey.values()]:
                 if value1.name() == "MRUListEx":
-                     list1= MRULIstExSort(list1, value1, successfull)
+                     list1 = MRULIstExSort(list1, value1, successfull)
                      successfull = True
 
         
         for value in [v for v in subkey.values()]:
             if value.name() != "MRUListEx":
-                list1 = openSavePidlMRU(value, subkeyName)
+                ComDlg = openSavePidlMRU(value, subkeyName)
                 
-                MFT = list1[1]
+                MFT = ComDlg[1]
                 
-                filePath = list1[0]
+                filePath = ComDlg[0]
                 indexnum = 0
 
 
@@ -144,7 +130,6 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                      i = str_to_int(value.name())
                      if p == i:
                          indexnum = list1.index(p)
-                         print "%d %d" % (p, indexnum)
 
                 blockstart = 0
 

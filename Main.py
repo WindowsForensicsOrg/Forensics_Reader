@@ -20,7 +20,7 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     db.text_factory = str
     cursor = db.cursor()
 
-    cursor.execute(    '''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value VARCHAR,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT, KeyTimeStamp TEXT, MRUOrder INTEGER)''')
+    cursor.execute(    '''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT, KeyTimeStamp TEXT, MRUOrder INTEGER)''')
     
 
     ReadAllReg(db, cursor, filename + "\\NTUSER.DAT", "Info",
@@ -36,8 +36,8 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Operating System Information"''').fetchone()[0]
     
     ui.tableWidget_OS.setRowCount(rowcount)
-    ui.tableWidget_OS.setHorizontalHeaderLabels(QString("ID;Name;Value;Category;State;Keystr;RecString;KeyParent;KeyTimeStamp;MRUOrder").split(";"))
-    cursor.execute('''SELECT * FROM %s WHERE Keystr IS "Operating System Information" ORDER BY KeyParent,MRUOrder''' % "Info")
+    ui.tableWidget_OS.setHorizontalHeaderLabels(QString("Name;Value;KeyTimeStamp").split(";"))
+    cursor.execute('''SELECT Name,Value,KeyTimeStamp FROM %s WHERE Keystr IS "Operating System Information" ORDER BY KeyParent,MRUOrder''' % "Info")
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
             #if form[5] == "Operating System Information":
@@ -48,8 +48,8 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "OpenSavePidlMRU"''').fetchone()[0]
     
     ui.tableWidget_OpenSavePidlMRU.setRowCount(rowcount)
-    ui.tableWidget_OpenSavePidlMRU.setHorizontalHeaderLabels(QString("ID;Name;Value;Category;State;Keystr;RecString;KeyParent;KeyTimeStamp;MRUOrder").split(";"))
-    cursor.execute('''SELECT * FROM %s WHERE Keystr IS "OpenSavePidlMRU" ORDER BY KeyParent,MRUOrder''' % "Info")
+    ui.tableWidget_OpenSavePidlMRU.setHorizontalHeaderLabels(QString("Name;Value;KeyTimeStamp").split(";"))
+    cursor.execute('''SELECT  Name,Value,KeyTimeStamp FROM %s WHERE Keystr IS "OpenSavePidlMRU" ORDER BY KeyParent,MRUOrder''' % "Info")
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
             #if form[5] == "OpenSavePidlMRU":
@@ -63,8 +63,8 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Mounted Devices"''').fetchone()[0]
     
     ui.tableWidget_MountedDevices.setRowCount(rowcount)
-    ui.tableWidget_MountedDevices.setHorizontalHeaderLabels(QString("ID;Name;Value;Category;State;Keystr;RecString;KeyParent;KeyTimeStamp;MRUOrder").split(";"))
-    cursor.execute('''SELECT * FROM %s WHERE Keystr IS "Mounted Devices" ORDER BY Name''' % "Info")
+    ui.tableWidget_MountedDevices.setHorizontalHeaderLabels(QString("Name;Value;KeyTimeStamp").split(";"))
+    cursor.execute('''SELECT  Name,Value,KeyTimeStamp FROM %s WHERE Keystr IS "Mounted Devices" ORDER BY Name''' % "Info")
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
             #if form[5] == "Mounted Devices":
@@ -75,15 +75,22 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Typed Paths"''').fetchone()[0]
     
     ui.tableWidget_TypedPaths.setRowCount(rowcount)
-    ui.tableWidget_TypedPaths.setHorizontalHeaderLabels(QString("ID;Name;Value;Category;State;Keystr;RecString;KeyParent;KeyTimeStamp;MRUOrder").split(";"))
-    cursor.execute('''SELECT * FROM %s WHERE Keystr IS "Typed Paths" ORDER BY Name''' % "Info")
+    ui.tableWidget_TypedPaths.setHorizontalHeaderLabels(QString("Name;Value;KeyTimeStamp").split(";"))
+    cursor.execute('''SELECT  Name,Value,KeyTimeStamp FROM %s WHERE Keystr IS "Typed Paths" ORDER BY Name''' % "Info")
     for row1, form in enumerate(cursor):
         for column, item in enumerate(form):
             #if form[5] == "Typed Paths":
             ui.tableWidget_TypedPaths.setItem(row1, column, QTableWidgetItem(str(item)))
     ui.tableWidget_TypedPaths.resizeColumnsToContents()    #End tab TypedPaths
 
-ui.button_Start_Exam.pressed.connect(StartExam)
-ui.button_Exit.pressed.connect(exit)
-window.show()#showMaximized()
-sys.exit(app.exec_())
+
+
+def main():
+    db.commit()
+    db.close()
+if __name__ == "__main__":
+
+    ui.button_Start_Exam.pressed.connect(StartExam)
+    ui.button_Exit.pressed.connect(exit)
+    window.show()#showMaximized()
+    sys.exit(app.exec_())

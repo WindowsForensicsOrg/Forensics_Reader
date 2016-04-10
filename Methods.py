@@ -48,7 +48,21 @@ def ReadSingleReg(db, cursor, hive, TableName, regPath, Key, Category, stateStr,
 
     except:
         print "Error in ReadSingleReg"
-
+def clean(item):
+    """Clean up the memory by closing and deleting the item if possible."""
+    if isinstance(item, list) or isinstance(item, dict):
+        for _ in range(len(item)):
+            clean(item.pop())
+    else:
+        try:
+            item.close()
+        except (RuntimeError, AttributeError): # deleted or no close method
+            pass
+        try:
+            item.deleteLater()
+        except (RuntimeError, AttributeError): # deleted or no deleteLater method
+            pass
+# end cleanUp
 
 def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr):
     reg = Registry.Registry(Hive)

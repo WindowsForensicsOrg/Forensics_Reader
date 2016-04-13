@@ -28,7 +28,7 @@ import struct
 import uuid
 from os import path
 from Registry import Registry
-from MRULIstExSort import MRULIstExSort
+from MRUListExSort import MRUListExSort
 from comDlg32 import openSavePidlMRU
 
 def ReadSingleReg(db, cursor, Hive, TableName, Source, Key, Category, stateStr, KeyStr):

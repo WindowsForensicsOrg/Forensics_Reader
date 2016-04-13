@@ -1,4 +1,4 @@
-def MRULIstExSort(list1, value, successfull):
+def MRUListExSort(list1, value, successfull):
    
     successfull = True
     if value.name() == 'MRUListEx':

@@ -19,18 +19,21 @@ def StartExam():  # Order:(db, cursor, hive, TableName, regPath,  Key, Category,
     db = sqlite3.connect(":memory:")
     db.text_factory = str
     cursor = db.cursor()
-
+    ui.msgLabel.setText("Processing.....  ")
+    app.processEvents()
     cursor.execute(    '''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT, KeyTimeStamp TEXT, MRUOrder INTEGER, MFT INTEGER)''')
     
-
+    
     ReadAllReg(db, cursor, filename + "\\NTUSER.DAT", "Info",
                    r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir","Typed Paths")  # Typed Paths
+    ui.msgLabel.setText("Processing  "+ filename+ "\\SOFTWARE " + r"Microsoft\Windows NT\CurrentVersion")
     ReadAllReg(db, cursor, filename + "\\SOFTWARE", "Info", r"Microsoft\Windows NT\CurrentVersion", "OS", "SubDir", "Operating System Information")
     ReadAllReg(db, cursor, filename + "\\SYSTEM", "Info", "MountedDevices", "OS", "SubDir", "Mounted Devices")  # Mounted devices
     ReadSingleReg(db, cursor, filename + "\\SYSTEM", "Info", "Select", "Current", "OS", "Single", "Operating System Information")  # CurrentControlSet
     ReadAllRegSubdir(db, cursor, filename + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU", "User",
                          "SubDirRec", "OpenSavePidlMRU") #OpenSavePidlMRU
-
+    ui.msgLabel.setText("Done")
+    app.processEvents()
     #Order: ID;Name;Value;Category;State;Keystr;RecString;KeyParent;KeyTimeStamp;MRUOrder;MRU
     #Tab 2 Operating System Information
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Operating System Information"''').fetchone()[0]

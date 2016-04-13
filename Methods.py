@@ -31,43 +31,46 @@ from Registry import Registry
 from MRULIstExSort import MRULIstExSort
 from comDlg32 import openSavePidlMRU
 
-def ReadSingleReg(db, cursor, hive, TableName, regPath, Key, Category, stateStr, KeyStr):
-    reg = Registry.Registry(hive)
-
+def ReadSingleReg(db, cursor, Hive, TableName, Source, Key, Category, stateStr, KeyStr):
+    reg = Registry.Registry(Hive)
+    
     try:
-        key = reg.open(regPath)
+        key = reg.open(Source)
+        
     except Registry.RegistryKeyNotFoundException:
-        print "Couldn't find %s..." % regPath
+        print "Couldn't find %s..." % Source
         pass
     try:
-        k = reg.open(regPath)
+        k = reg.open(Source)
+        Source = "From: {} and registry path: {}".format(Hive, Source)
         v = k.value(Key)
         cursor.execute(
-            '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
-            (v.name(), v.value(), Category, stateStr, KeyStr, None, None, key.timestamp()))
+            '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp,Source) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
+            (v.name(), v.value(), Category, stateStr, KeyStr, None, None, key.timestamp(),Source))
 
     except:
         print "Error in ReadSingleReg"
 
 
-def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr):
+def ReadAllReg(db, cursor, Hive, TableName, Source, Category, stateStr, KeyStr):
     reg = Registry.Registry(Hive)
     try:
-        key = reg.open(regPath)
+        key = reg.open(Source)
+        Source = "From: {} and registry path: {}".format(Hive, Source)
     except Registry.RegistryKeyNotFoundException:
-        print "Couldn't find %s..." % regPath
+        print "Couldn't find %s..." % Source
     try:
         for value in [v for v in key.values()]:
             try:
                 if value.name() == "InstallDate":
                     cursor.execute(
-                        '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
-                        [value.name(), ToUnix(value), Category, stateStr, KeyStr, None, None, key.timestamp()])
+                        '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, Source) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
+                        [value.name(), ToUnix(value), Category, stateStr, KeyStr, None, None, key.timestamp(), Source])
                 elif value.name() == "InstallTime":
                     cursor.execute(
-                        '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
+                        '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, Source) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
                         [value.name(), FiletimeToDateTime(value), Category, stateStr, KeyStr, None, None,
-                         key.timestamp()])
+                         key.timestamp(), Source])
                 else:
                     mountedDevices_unicode = ['5f', '5c']
                     if value.value()[0].encode('hex') in mountedDevices_unicode:
@@ -76,13 +79,13 @@ def ReadAllReg(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr)
                        #value1 = value.raw_value() Denne gør man kan se signature + startsector stringen korrekt  value1 = value.raw_value(). Men ikke andet,
                        value1 = value.value() #Der skal laves nogle tjek for om det er ascii eller lignende gejl
                     cursor.execute(
-                        '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
-                        [value.name(), value1, Category, stateStr, KeyStr, None, None, key.timestamp()])
+                        '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, Source) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
+                        [value.name(), value1, Category, stateStr, KeyStr, None, None, key.timestamp(), Source])
             except:
                 cursor.execute(
-                    '''INSERT INTO %s (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp) VALUES(?,?,?,?,?,?,?,?)''' % TableName,
+                    '''INSERT INTO %s (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, Source) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
                     [value.name(), str(binascii.b2a_hex(value.raw_data())), Category, stateStr, KeyStr, None, None,
-                     key.timestamp()])
+                     key.timestamp(), Source])
 
     except:
         print"Error in ReadAllReg"
@@ -98,15 +101,15 @@ def read(s):
             Filetext += a
     return s
 
-def rec(key, cursor, TableName, Category, stateStr, KeyStr):
+def rec(key, cursor, TableName, Category, stateStr, KeyStr,Source):
    
     for subkey in key.subkeys():
         subkeyName = subkey.name()
         list1 = []
         MFT = ''
         cursor.execute(
-            '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent,KeyTimeStamp,MFT) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
-            [subkey.name(), "", Category, stateStr, KeyStr, "Folder", subkey.name(), subkey.timestamp(), MFT])
+            '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent,KeyTimeStamp,MFT,Source) VALUES(?,?,?,?,?,?,?,?,?,?)''' % TableName,
+            [subkey.name(), "", Category, stateStr, KeyStr, "Folder", subkey.name(), subkey.timestamp(), MFT,Source])
         blockstart = 0
         successfull = False
 
@@ -135,8 +138,8 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr):
                 blockstart = 0
 
                 cursor.execute(
-                    '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, MRUOrder, MFT) VALUES(?,?,?,?,?,?,?,?,?,?)''' % TableName,
-                    [value.name(), filePath, Category, stateStr, KeyStr, "Key",subkey.name(), key.timestamp(),indexnum, MFT])
+                    '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, MRUOrder, MFT,Source) VALUES(?,?,?,?,?,?,?,?,?,?,?)''' % TableName,
+                    [value.name(), filePath, Category, stateStr, KeyStr, "Key",subkey.name(), key.timestamp(),indexnum, MFT,Source])
     
 
 def str_to_int(s):
@@ -147,15 +150,16 @@ def str_to_int(s):
     return i
 
 
-def ReadAllRegSubdir(db, cursor, Hive, TableName, regPath, Category, stateStr, KeyStr):
+def ReadAllRegSubdir(db, cursor, Hive, TableName, Source, Category, stateStr, KeyStr):
     reg = Registry.Registry(Hive)
     try:
-        key = reg.open(regPath)
+        key = reg.open(Source)
+        Source = "From: {} and registry path: {}".format(Hive, Source)
     except Registry.RegistryKeyNotFoundException:
-        print "Couldn't find %s..." % regPath
+        print "Couldn't find %s..." % Source
     try:
 
-        rec(key, cursor, TableName, Category, stateStr, KeyStr)
+        rec(key, cursor, TableName, Category, stateStr, KeyStr, Source)
 
 
     except Exception,e: print str(e), "Couldn't send to rec (ReadAllRegSubdir)"

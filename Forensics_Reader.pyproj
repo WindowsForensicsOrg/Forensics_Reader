@@ -26,6 +26,9 @@
     <Compile Include="GUI.py" />
     <Compile Include="guids.py" />
     <Compile Include="Main.py" />
+    <Compile Include="makeTabs.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Methods.py" />
     <Compile Include="MRUListExSort.py">
       <SubType>Code</SubType>

@@ -45,13 +45,22 @@ class Ui_Dialog(object):
         self.verticalLayout = QtGui.QVBoxLayout(Dialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.tabWidget = QtGui.QTabWidget(Dialog)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
         self.tabWidget.setSizePolicy(sizePolicy)
-        self.tabWidget.setMaximumSize(QtCore.QSize(16777215, 100000))
+        self.tabWidget.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.tabWidget.setAutoFillBackground(True)
+        self.tabWidget.setStyleSheet(_fromUtf8("QHeaderView::section {\n"
+"    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,\n"
+"                                      stop:0 #616161, stop: 0.5 #505050,\n"
+"                                      stop: 0.6 #434343, stop:1 #656565);\n"
+"    color: white;\n"
+"    padding-left: 4px;\n"
+"    border: 1px solid #6c6c6c;\n"
+"    \n"
+"}"))
         self.tabWidget.setObjectName(_fromUtf8("tabWidget"))
         self.tab = QtGui.QWidget()
         self.tab.setAutoFillBackground(True)
@@ -86,9 +95,10 @@ class Ui_Dialog(object):
 "    border: 1px solid #6c6c6c;\n"
 "    \n"
 "}"))
+        self.tableWidget_OS.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.tableWidget_OS.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        self.tableWidget_OS.setTextElideMode(QtCore.Qt.ElideLeft)
-        self.tableWidget_OS.setColumnCount(4)
+        self.tableWidget_OS.setTextElideMode(QtCore.Qt.ElideRight)
+        self.tableWidget_OS.setColumnCount(5)
         self.tableWidget_OS.setObjectName(_fromUtf8("tableWidget_OS"))
         self.tableWidget_OS.setRowCount(0)
         self.tableWidget_OS.horizontalHeader().setStretchLastSection(True)
@@ -178,10 +188,11 @@ class Ui_Dialog(object):
 "    \n"
 "}"))
         self.tableWidget_TypedPaths.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        self.tableWidget_TypedPaths.setColumnCount(4)
+        self.tableWidget_TypedPaths.setColumnCount(5)
         self.tableWidget_TypedPaths.setObjectName(_fromUtf8("tableWidget_TypedPaths"))
         self.tableWidget_TypedPaths.setRowCount(0)
         self.tableWidget_TypedPaths.horizontalHeader().setStretchLastSection(True)
+        self.tableWidget_TypedPaths.verticalHeader().setStretchLastSection(True)
         self.gridLayout_6.addWidget(self.tableWidget_TypedPaths, 0, 0, 1, 1)
         self.tabWidget_RegistrySubTabs.addTab(self.tab_TypedPaths, _fromUtf8(""))
         self.tab_RecentDocs = QtGui.QWidget()
@@ -225,6 +236,8 @@ class Ui_Dialog(object):
 "    border: 1px solid #6c6c6c;\n"
 "    \n"
 "}"))
+        self.tableWidget_UserAssist.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        self.tableWidget_UserAssist.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.tableWidget_UserAssist.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.tableWidget_UserAssist.setColumnCount(4)
         self.tableWidget_UserAssist.setObjectName(_fromUtf8("tableWidget_UserAssist"))
@@ -413,8 +426,8 @@ class Ui_Dialog(object):
         self.verticalLayout.addWidget(self.splitter)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(2)
-        self.tabWidget_RegistrySubTabs.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget_RegistrySubTabs.setCurrentIndex(1)
         QtCore.QObject.connect(self.button_Exit, QtCore.SIGNAL(_fromUtf8("clicked()")), self.button_Exit.click)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 

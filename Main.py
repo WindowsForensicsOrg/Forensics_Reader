@@ -76,6 +76,7 @@ def StartExam():  # Order:(db, cursor, hive, TableName, Source,  Key, Category, 
     #Tab  mounted devices
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Mounted Devices"''').fetchone()[0]
     if rowcount > 0:
+        ui.tabWidget.addTab(ui.tab_Registry, "Registry")
         ui.tabWidget_RegistrySubTabs.addTab(ui.tableWidget_MountedDevices, "MountedDevices")
         ui.tableWidget_MountedDevices.setRowCount(rowcount)
         ui.tableWidget_MountedDevices.setHorizontalHeaderLabels(QString("Name;Value;KeyTimeStamp;Source").split(";"))
@@ -87,18 +88,18 @@ def StartExam():  # Order:(db, cursor, hive, TableName, Source,  Key, Category, 
         ui.tableWidget_MountedDevices.resizeColumnsToContents()        
         #End tab mounted devices
     #Tab TypedPaths
-    rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Typed Paths"''').fetchone()[0]
     if rowcount > 0:
+        ui.tabWidget.addTab(ui.tab_Registry, "Registry")
         ui.tabWidget_RegistrySubTabs.addTab(ui.tableWidget_TypedPaths, "TypedPaths")
         ui.tableWidget_TypedPaths.setRowCount(rowcount)
         ui.tableWidget_TypedPaths.setHorizontalHeaderLabels(QString("Name;Value;KeyTimeStamp;Source").split(";"))
         cursor.execute('''SELECT  Name,Value,KeyTimeStamp,Source FROM %s WHERE Keystr IS "Typed Paths" ORDER BY Name''' % "Info")
         for row1, form in enumerate(cursor):
             for column, item in enumerate(form):
-                #if form[5] == "Typed Paths":
-                ui.tableWidget_TypedPaths.setItem(row1, column, QTableWidgetItem(str(item)))
-        ui.tableWidget_TypedPaths.resizeColumnsToContents()    #End tab TypedPaths
-
+                #if form[5] == "Mounted Devices":
+                ui.tableWidget_TypedPaths.setItem(row1, column, QTableWidgetItem(str(item))) 
+        ui.tableWidget_TypedPaths.resizeColumnsToContents()
+  
 
 
 def main():

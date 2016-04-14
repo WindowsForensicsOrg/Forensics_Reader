@@ -62,6 +62,9 @@ def ReadAllReg(db, cursor, Hive, TableName, Source, Category, stateStr, KeyStr):
     try:
         for value in [v for v in key.values()]:
             try:
+               
+                   
+            
                 if value.name() == "InstallDate":
                     cursor.execute(
                         '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, Source) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,

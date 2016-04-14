@@ -61,6 +61,9 @@ def ReadAllReg(db, cursor, Hive, TableName, Source, Category, stateStr, KeyStr):
         print "Couldn't find %s..." % Source
     try:
         for value in [v for v in key.values()]:
+           # if value.name() =="CurrentMajorVersionNumber":
+            #    print  "%s: %s" % (value.name(), v.value_type())
+
             try:
                
                    
@@ -74,6 +77,19 @@ def ReadAllReg(db, cursor, Hive, TableName, Source, Category, stateStr, KeyStr):
                         '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, Source) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
                         [value.name(), FiletimeToDateTime(value), Category, stateStr, KeyStr, None, None,
                          key.timestamp(), Source])
+
+                elif value.name() == "DigitalProductId" or value.name() == "DigitalProductId4":
+                    value1 = value.value().decode('utf16')
+                    cursor.execute(
+                        '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, Source) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
+                        [value.name(), value, Category, stateStr, KeyStr, None, None,
+                         key.timestamp(), Source])
+                elif value.name()== "CurrentMajorVersionNumber" or value.name()== "CurrentMinorVersionNumber" or value.name()== "UBR":
+                    cursor.execute(
+                    '''INSERT INTO %s (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, Source) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
+                    [value.name(), str(struct.unpack("<L", value.raw_data())[0]), Category, stateStr, KeyStr, None, None,
+                     key.timestamp(), Source])
+
                 else:
                     mountedDevices_unicode = ['5f', '5c']
                     if value.value()[0].encode('hex') in mountedDevices_unicode:
@@ -84,13 +100,17 @@ def ReadAllReg(db, cursor, Hive, TableName, Source, Category, stateStr, KeyStr):
                     cursor.execute(
                         '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, Source) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
                         [value.name(), value1, Category, stateStr, KeyStr, None, None, key.timestamp(), Source])
+
+
+
             except:
                 cursor.execute(
                     '''INSERT INTO %s (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, Source) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
                     [value.name(), str(binascii.b2a_hex(value.raw_data())), Category, stateStr, KeyStr, None, None,
                      key.timestamp(), Source])
 
-    except:
+    except Registry.RegistryKeyNotFoundException:
+        print "Couldn't find Run key. Exiting..."
         print"Error in ReadAllReg"
 
 

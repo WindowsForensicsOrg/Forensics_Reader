@@ -116,7 +116,7 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr,Source):
         while not successfull:
             for value1 in [v for v in subkey.values()]:
                 if value1.name() == "MRUListEx":
-                     list1 = MRULIstExSort(list1, value1, successfull)
+                     list1 = MRUListExSort(list1, value1, successfull)
                      successfull = True
 
         

@@ -38,7 +38,12 @@ def StartExam():  # Order:(db, cursor, hive, TableName, Source,  Key, Category, 
     #Tab 2 Operating System Information
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Operating System Information"''').fetchone()[0]
     if rowcount != 0:
-        ui.tableWidget_OS.setEnabled(True)
+        #interactor = ui.tabWidget.widget(1)
+        ui.tabWidget.addTab(ui.tab_OS, "Operating System Information")
+        #app.processEvents()
+        #ui.tab_OS.
+        #interactor..close()
+        #interactor.deleteLater()
         ui.tableWidget_OS.setRowCount(rowcount)
         ui.tableWidget_OS.setHorizontalHeaderLabels(QString("Name;Value;KeyTimeStamp;Source").split(";"))
         cursor.execute('''SELECT Name,Value,KeyTimeStamp,Source FROM %s WHERE Keystr IS "Operating System Information" ORDER BY KeyParent,MRUOrder''' % "Info")
@@ -47,11 +52,15 @@ def StartExam():  # Order:(db, cursor, hive, TableName, Source,  Key, Category, 
                 #if form[5] == "Operating System Information":
                  ui.tableWidget_OS.setItem(row1, column, QTableWidgetItem(str(item))) 
         ui.tableWidget_OS.resizeColumnsToContents()
+        
         #End tab Operating System Information
+ 
     #Tab 3 OpenSavePidlMRU
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "OpenSavePidlMRU"''').fetchone()[0]
     if rowcount > 0:
-        ui.tableWidget_OpenSavePidlMRU.setEnabled(True)
+        ui.tabWidget.addTab(ui.tab_Registry, "Registry")
+        ui.tabWidget_RegistrySubTabs.addTab(ui.tab_OpenSavePidMRU,"OPenSavePidlMRU")
+        
         ui.tableWidget_OpenSavePidlMRU.setRowCount(rowcount)
         ui.tableWidget_OpenSavePidlMRU.setHorizontalHeaderLabels(QString("Name;Value;KeyTimeStamp;MFT Number;Source").split(";"))
         cursor.execute('''SELECT  Name,Value,KeyTimeStamp, MFT, Source FROM %s WHERE Keystr IS "OpenSavePidlMRU" ORDER BY KeyParent,MRUOrder''' % "Info")
@@ -67,7 +76,7 @@ def StartExam():  # Order:(db, cursor, hive, TableName, Source,  Key, Category, 
     #Tab  mounted devices
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Mounted Devices"''').fetchone()[0]
     if rowcount > 0:
-        ui.tableWidget_MountedDevices.setEnabled(True)
+        ui.tabWidget_RegistrySubTabs.addTab(ui.tableWidget_MountedDevices, "MountedDevices")
         ui.tableWidget_MountedDevices.setRowCount(rowcount)
         ui.tableWidget_MountedDevices.setHorizontalHeaderLabels(QString("Name;Value;KeyTimeStamp;Source").split(";"))
         cursor.execute('''SELECT  Name,Value,KeyTimeStamp,Source FROM %s WHERE Keystr IS "Mounted Devices" ORDER BY Name''' % "Info")
@@ -80,7 +89,7 @@ def StartExam():  # Order:(db, cursor, hive, TableName, Source,  Key, Category, 
     #Tab TypedPaths
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Typed Paths"''').fetchone()[0]
     if rowcount > 0:
-        ui.tableWidget_TypedPaths.setEnabled(True)
+        ui.tabWidget_RegistrySubTabs.addTab(ui.tableWidget_TypedPaths, "TypedPaths")
         ui.tableWidget_TypedPaths.setRowCount(rowcount)
         ui.tableWidget_TypedPaths.setHorizontalHeaderLabels(QString("Name;Value;KeyTimeStamp;Source").split(";"))
         cursor.execute('''SELECT  Name,Value,KeyTimeStamp,Source FROM %s WHERE Keystr IS "Typed Paths" ORDER BY Name''' % "Info")
@@ -96,8 +105,29 @@ def main():
     db.commit()
     db.close()
 if __name__ == "__main__":
+   
+    
+    ui.button_Start_Exam.clicked.connect(StartExam)
+    ui.button_Exit.clicked.connect(exit)
 
-    ui.button_Start_Exam.pressed.connect(StartExam)
-    ui.button_Exit.pressed.connect(exit)
+    items = ui.tabWidget.count()
+    itemsRegistry = ui.tabWidget_RegistrySubTabs.count()
+    for w1 in range(0,itemsRegistry):
+        for i in range(0,itemsRegistry):  
+            ui.tabWidget_RegistrySubTabs.removeTab(w1)
+    for w1 in range(1,items):
+        for i in range(1,items):  
+            ui.tabWidget.removeTab(w1)
+    
+    
+        
+               
+            
+  
+    #interactor.close()
+    #interactor.deleteLater()
     window.show()#showMaximized()
+
+    
+    
     sys.exit(app.exec_())

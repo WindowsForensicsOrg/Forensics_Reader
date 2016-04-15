@@ -161,8 +161,8 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr,Source):
                 blockstart = 0
 
                 cursor.execute(
-                    '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, MRUOrder, MFT,Source) VALUES(?,?,?,?,?,?,?,?,?,?,?)''' % TableName,
-                    [value.name(), filePath, Category, stateStr, KeyStr, "Key",subkey.name(), key.timestamp(),indexnum, MFT,Source])
+                    '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, MRUOrder, MFT,Source) VALUES(?,?,?,?,?,?,?,?,?,?)''' % TableName,
+                    [value.name(), filePath, Category, stateStr, KeyStr, "Key",subkey.name(),indexnum, MFT,Source])
     
 
 def str_to_int(s):

@@ -30,6 +30,7 @@ from os import path
 from Registry import Registry
 from MRUListExSort import MRUListExSort
 from comDlg32 import openSavePidlMRU
+from userassist import *
 
 def ReadSingleReg(db, cursor, Hive, TableName, Source, Key, Category, stateStr, KeyStr):
     reg = Registry.Registry(Hive)

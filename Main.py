@@ -8,6 +8,8 @@ import os
 import sqlite3
 from Methods import *
 from makeTabs import *
+from userassist import *
+
 
 app = QApplication(sys.argv)
 window = QDialog()
@@ -31,6 +33,7 @@ def StartExam():  # Order:(db, cursor, hive, TableName, Source,  Key, Category, 
                        r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir","Typed Paths")  # Typed Paths
         ReadAllRegSubdir(db, cursor, filename + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU", "User",
                          "SubDirRec", "OpenSavePidlMRU") #OpenSavePidlMRU
+
     if os.access(filename + "\\SOFTWARE", os.R_OK): 
         ReadAllReg(db, cursor, filename + "\\SOFTWARE", "Info", r"Microsoft\Windows NT\CurrentVersion", "OS", "SubDir", "Operating System Information")
     if os.access(filename + "\\SYSTEME", os.R_OK): 

@@ -4,21 +4,54 @@ from datetime import datetime, timedelta
 import codecs
 import sys
 import sqlite3
+def UserAssist(db, cursor, ntuser,software):
+    softreg = Registry.Registry(software)
 
-softreg = Registry.Registry('SOFTWARE')
+    folderDescription_dict = {}
 
-folderDescription_dict = {}
+    folderDescription = softreg.open('Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions')
 
-folderDescription = softreg.open('Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions')
-
-for subkey in folderDescription.subkeys():
-    guid = subkey.name().upper()
-    for value in subkey.values():
-        if value.name() == 'Name':
-            folderDescription_dict[guid] = value.value()
+    for subkey in folderDescription.subkeys():
+        guid = subkey.name().upper()
+        for value in subkey.values():
+            if value.name() == 'Name':
+                folderDescription_dict[guid] = value.value()
 
 
-reg = Registry.Registry('NTUSER.DAT')
+    reg = Registry.Registry(ntuser)
+    userassist = 'Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist'
+
+        # Get all guids in UserAssist key
+    userassist_subKeyGuids = []
+
+    top = reg.open(userassist)
+    for subkeyGuid in top.subkeys():
+        userassist_subKeyGuids.append(subkeyGuid.name())
+
+
+    entries = []
+        
+    for guid in userassist_subKeyGuids:
+        for value in reg.open(userassist).subkey(guid).subkey("Count").values():
+                #Windows 7
+                if len(value.value()) == 72:
+                    runcount = struct.unpack("<I", value.value()[4:8])[0]
+                    wintimestamp = struct.unpack("<Q", value.value()[60:68])[0]
+                    key = reg.open(userassist).subkey(guid).name()
+                    skey = reg.open(userassist).subkey(guid).subkey("Count").name()
+                    focus_raw = struct.unpack("<2H", value.value()[12:16])[0]
+                    focus = float(focus_raw) / 60000
+                    lastrun = convert_wintime(wintimestamp)
+                    guiddata = codecs.decode(value.name(), 'rot_13')
+                    folderdata = guid_to_folder(guiddata)
+                    source = "From: {} and registry path: {}".format(ntuser, userassist)
+                    cursor.execute(
+                            '''INSERT INTO %s  (Name, Runcount, Lastrun, Folderdata, Focus, Source) VALUES(?,?,?,?,?,?)''' % "UserAssistTable",
+                            [guiddata, runcount, lastrun, folderdata, focus,  source])
+                           
+
+    
+
 
 def convert_wintime(windate):
         us = int(windate) / 10
@@ -36,42 +69,11 @@ def guid_to_folder(data):
     except:
         return data
 
-def parseUserAssist(hive):
-        userassist = 'Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist'
+ 
+           
+                         
 
-        # Get all guids in UserAssist key
-        userassist_subKeyGuids = []
-
-        top = reg.open(userassist)
-        for subkeyGuid in top.subkeys():
-            userassist_subKeyGuids.append(subkeyGuid.name())
+            
 
 
-        entries = []
-        
-        for guid in userassist_subKeyGuids:
-            for value in reg.open(userassist).subkey(guid).subkey("Count").values():
-                    #Windows 7
-                    if len(value.value()) == 72:
-                        runcount = struct.unpack("<I", value.value()[4:8])[0]
-                        wintimestamp = struct.unpack("<Q", value.value()[60:68])[0]
-                        key = reg.open(userassist).subkey(guid).name()
-                        skey = reg.open(userassist).subkey(guid).subkey("Count").name()
-                        focus_raw = struct.unpack("<2H", value.value()[12:16])[0]
-                        focus = float(focus_raw) / 60000
-                        lastrun = convert_wintime(wintimestamp)
-                        guiddata = codecs.decode(value.name(), 'rot_13')
-                        folderdata = guid_to_folder(guiddata)
-                        
-                        entries.append({'KeyName':key, 'SubKeyName':skey, 'Focus':focus, 'RunCount':runcount, 'LastRun':lastrun, 'Value':folderdata})
-
-        return(entries)
-
-        cursor.execute(
-                        '''INSERT INTO %s  (Name, Runcount, Lastrun, Folderdata, Source) VALUES(?,?,?,?,?)''' % TableName,
-                        [value.name(), focus, runcount, lastrun, folderdata, Source])
-
-for entry in parseUserAssist(reg):
-    for k, v in entry.iteritems():
-        print (k +" " +  str(v)) 
-    print "\n"
+           

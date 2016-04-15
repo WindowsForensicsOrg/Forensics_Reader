@@ -51,6 +51,7 @@ def makeTabs(cursor, tabWidget,tabWidget_RegistrySubTabs, ui ):
         ui.tableWidget_MountedDevices.resizeColumnsToContents()        
         #End tab mounted devices
     #Tab TypedPaths
+    rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Typed Paths"''').fetchone()[0]
     if rowcount > 0:
         ui.tabWidget.addTab(ui.tab_Registry, "Registry")
         ui.tabWidget_RegistrySubTabs.addTab(ui.tableWidget_TypedPaths, "TypedPaths")
@@ -61,4 +62,19 @@ def makeTabs(cursor, tabWidget,tabWidget_RegistrySubTabs, ui ):
             for column, item in enumerate(form):
                 #if form[5] == "Mounted Devices":
                 ui.tableWidget_TypedPaths.setItem(row1, column, QTableWidgetItem(str(item))) 
-        ui.tableWidget_TypedPaths.resizeColumnsToContents()
+        ui.tableWidget_TypedPaths.resizeColumnsToContents
+    #End tab TypedPaths
+    #tab_UserAssist
+     
+    rowcount = cursor.execute('''SELECT COUNT(*) FROM UserAssistTable''').fetchone()[0]
+    if rowcount > 0:
+        ui.tabWidget.addTab(ui.tab_Registry, "Registry")
+        ui.tabWidget_RegistrySubTabs.addTab(ui.tableWidget_UserAssist, "UserAssist")
+        ui.tableWidget_UserAssist.setRowCount(rowcount)
+        ui.tableWidget_UserAssist.setHorizontalHeaderLabels(QString("Value;Run Count;Last Run, value, source").split(";"))
+        cursor.execute('''SELECT  Name, RunCount, LastRun, source FROM UserAssistTable''')
+        for row1, form in enumerate(cursor):
+            for column, item in enumerate(form):
+                ui.tableWidget_UserAssist.setItem(row1, column, QTableWidgetItem(str(item))) 
+        ui.tableWidget_UserAssist.resizeColumnsToContents
+    #End tab_UserAssist

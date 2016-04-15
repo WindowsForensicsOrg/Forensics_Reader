@@ -28,23 +28,26 @@ def StartExam():  # Order:(db, cursor, hive, TableName, Source,  Key, Category, 
     app.processEvents()
     cursor.execute(    '''CREATE TABLE Info(Id INTEGER PRIMARY KEY, Name TEXT, Value TEXT,Category TEXT, State TEXT, Keystr TEXT, RecString TEXT, KeyParent TEXT, KeyTimeStamp TEXT, MRUOrder INTEGER, MFT INTEGER, Source TEXT)''')
     
-    if os.access(filename + "\\NTUSER.DAT", os.R_OK): 
-        ReadAllReg(db, cursor, filename + "\\NTUSER.DAT", "Info",
-                       r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir","Typed Paths")  # Typed Paths
-        ReadAllRegSubdir(db, cursor, filename + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU", "User",
-                         "SubDirRec", "OpenSavePidlMRU") #OpenSavePidlMRU
-
-    if os.access(filename + "\\SOFTWARE", os.R_OK): 
-        ReadAllReg(db, cursor, filename + "\\SOFTWARE", "Info", r"Microsoft\Windows NT\CurrentVersion", "OS", "SubDir", "Operating System Information")
-    if os.access(filename + "\\SYSTEME", os.R_OK): 
-        ReadAllReg(db, cursor, filename + "\\SYSTEM", "Info", "MountedDevices", "OS", "SubDir", "Mounted Devices")  # Mounted devices
-        ReadSingleReg(db, cursor, filename + "\\SYSTEM", "Info", "Select", "Current", "OS", "Single", "Operating System Information")  # CurrentControlSet
+    #if os.access(filename + "\\NTUSER.DAT", os.R_OK): 
+     #   ReadAllReg(db, cursor, filename + "\\NTUSER.DAT", "Info",
+      #                 r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir","Typed Paths")  # Typed Paths
+     #   ReadAllRegSubdir(db, cursor, filename + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU", "User",
+      #                   "SubDirRec", "OpenSavePidlMRU") #OpenSavePidlMRU
+    if os.access(filename + "\\NTUSER.DAT", os.R_OK) and os.access(filename + "\\SOFTWARE", os.R_OK):
+       cursor.execute(    '''CREATE TABLE UserAssistTable(Id INTEGER PRIMARY KEY, Name TEXT, focus TEXT, RunCount INTEGER, LastRun TEXT, Folderdata TEXT, Source TEXT)''')
+       UserAssist(db, cursor, filename + "\\NTUSER.DAT", filename + "\\SOFTWARE")
+    #if os.access(filename + "\\SOFTWARE", os.R_OK): 
+     #   ReadAllReg(db, cursor, filename + "\\SOFTWARE", "Info", r"Microsoft\Windows NT\CurrentVersion", "OS", "SubDir", "Operating System Information")
+    #if os.access(filename + "\\SYSTEME", os.R_OK): 
+     #   ReadAllReg(db, cursor, filename + "\\SYSTEM", "Info", "MountedDevices", "OS", "SubDir", "Mounted Devices")  # Mounted devices
+      #  ReadSingleReg(db, cursor, filename + "\\SYSTEM", "Info", "Select", "Current", "OS", "Single", "Operating System Information")  # CurrentControlSet
     
+
     ui.msgLabel.setText("Done")
     app.processEvents()
     #Order: ID;Name;Value;Category;State;Keystr;RecString;KeyParent;KeyTimeStamp;MRUOrder;MRU
   
-    makeTabs(cursor, ui.tabWidget,ui.tabWidget_RegistrySubTabs,ui) #makeTabs.py 
+    makeTabs(cursor, ui.tabWidget,ui.tabWidget_RegistrySubTabs, ui) #makeTabs.py 
 
 
 
@@ -65,16 +68,6 @@ if __name__ == "__main__":
     for w1 in range(1,items):
         for i in range(1,items):  
             ui.tabWidget.removeTab(w1)
-    
-    
-        
-               
-            
-  
-    #interactor.close()
-    #interactor.deleteLater()
-    window.show()#showMaximized()
 
-    
-    
+    window.show()#showMaximized()  
     sys.exit(app.exec_())

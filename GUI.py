@@ -239,10 +239,11 @@ class Ui_Dialog(object):
         self.tableWidget_UserAssist.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.tableWidget_UserAssist.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.tableWidget_UserAssist.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        self.tableWidget_UserAssist.setColumnCount(4)
+        self.tableWidget_UserAssist.setColumnCount(5)
         self.tableWidget_UserAssist.setObjectName(_fromUtf8("tableWidget_UserAssist"))
         self.tableWidget_UserAssist.setRowCount(0)
         self.tableWidget_UserAssist.horizontalHeader().setStretchLastSection(True)
+        self.tableWidget_UserAssist.verticalHeader().setStretchLastSection(True)
         self.gridLayout_2.addWidget(self.tableWidget_UserAssist, 0, 0, 1, 1)
         self.tabWidget_RegistrySubTabs.addTab(self.tab_UserAssist, _fromUtf8(""))
         self.gridLayout_4.addWidget(self.tabWidget_RegistrySubTabs, 0, 0, 1, 1)
@@ -426,8 +427,8 @@ class Ui_Dialog(object):
         self.verticalLayout.addWidget(self.splitter)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(1)
-        self.tabWidget_RegistrySubTabs.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget_RegistrySubTabs.setCurrentIndex(4)
         QtCore.QObject.connect(self.button_Exit, QtCore.SIGNAL(_fromUtf8("clicked()")), self.button_Exit.click)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 

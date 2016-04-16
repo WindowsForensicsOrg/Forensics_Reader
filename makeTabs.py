@@ -19,14 +19,14 @@ def makeTabs(cursor, tabWidget,tabWidget_RegistrySubTabs, ui ):
         #End tab Operating System Information
     
     #Tab 3 OpenSavePidlMRU
-    rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "OpenSavePidlMRU"''').fetchone()[0]
+    rowcount = cursor.execute('''SELECT COUNT(*) FROM Info WHERE KeyStr like "%OPenSavePidlMRU%"''').fetchone()[0]
     if rowcount > 0:
         ui.tabWidget.addTab(ui.tab_Registry, "Registry")
         ui.tabWidget_RegistrySubTabs.addTab(ui.tab_OpenSavePidMRU,"OPenSavePidlMRU")
         
         ui.tableWidget_OpenSavePidlMRU.setRowCount(rowcount)
-        ui.tableWidget_OpenSavePidlMRU.setHorizontalHeaderLabels(QString("Value;KeyTimeStamp;MFT Number;Source").split(";"))
-        cursor.execute('''SELECT  Value,KeyTimeStamp, MFT, Source FROM %s WHERE Keystr IS "OpenSavePidlMRU" ORDER BY KeyParent,MRUOrder''' % "Info")
+        ui.tableWidget_OpenSavePidlMRU.setHorizontalHeaderLabels(QString("File extension;Key name;Value;KeyTimeStamp;MFT Number;Source").split(";"))
+        cursor.execute('''SELECT KeyParent, Name, Value,KeyTimeStamp, MFT, Source FROM %s WHERE Keystr IS "OpenSavePidlMRU" ORDER BY KeyParent,MRUOrder''' % "Info")
         for row1, form in enumerate(cursor):
             for column, item in enumerate(form):
                 #if form[5] == "OpenSavePidlMRU":
@@ -35,7 +35,7 @@ def makeTabs(cursor, tabWidget,tabWidget_RegistrySubTabs, ui ):
                 else:
                     ui.tableWidget_OpenSavePidlMRU.setItem(row1, column, QTableWidgetItem(str(item)))  
         ui.tableWidget_OpenSavePidlMRU.horizontalHeader().setResizeMode(QHeaderView.ResizeToContents)
-                #End tab opensavepidlmru
+    #End tab opensavepidlmru
     #Tab  mounted devices
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Mounted Devices"''').fetchone()[0]
     if rowcount > 0:

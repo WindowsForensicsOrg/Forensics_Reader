@@ -31,6 +31,8 @@ def StartExam():  # Order:(db, cursor, hive, TableName, Source,  Key, Category, 
     if os.access(filename + "\\NTUSER.DAT", os.R_OK): 
         ReadAllReg(db, cursor, filename + "\\NTUSER.DAT", "Info",
                        r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths", "User", "SubDir","Typed Paths")  # Typed Paths
+       # cursor.execute(    '''CREATE TABLE OpenSavePidlMRUTable(Id INTEGER PRIMARY KEY, ParentKey TEXT, Name TEXT, focus TEXT, RunCount INTEGER, LastRun TEXT, Folderdata TEXT, Source TEXT)''')
+ 
         ReadAllRegSubdir(db, cursor, filename + "\\NTUSER.DAT", "Info", r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU", "User",
                          "SubDirRec", "OpenSavePidlMRU") #OpenSavePidlMRU
     if os.access(filename + "\\NTUSER.DAT", os.R_OK) and os.access(filename + "\\SOFTWARE", os.R_OK):

@@ -15,7 +15,7 @@ def makeTabs(cursor, tabWidget,tabWidget_RegistrySubTabs, ui ):
             for column, item in enumerate(form):
                 #if form[5] == "Operating System Information":
                  ui.tableWidget_OS.setItem(row1, column, QTableWidgetItem(str(item))) 
-        ui.tableWidget_OS.resizeColumnsToContents()    
+        ui.tableWidget_OS.horizontalHeader().setResizeMode(QHeaderView.ResizeToContents)    
         #End tab Operating System Information
     
     #Tab 3 OpenSavePidlMRU
@@ -25,8 +25,8 @@ def makeTabs(cursor, tabWidget,tabWidget_RegistrySubTabs, ui ):
         ui.tabWidget_RegistrySubTabs.addTab(ui.tab_OpenSavePidMRU,"OPenSavePidlMRU")
         
         ui.tableWidget_OpenSavePidlMRU.setRowCount(rowcount)
-        ui.tableWidget_OpenSavePidlMRU.setHorizontalHeaderLabels(QString("Name;Value;KeyTimeStamp;MFT Number;Source").split(";"))
-        cursor.execute('''SELECT  Name,Value,KeyTimeStamp, MFT, Source FROM %s WHERE Keystr IS "OpenSavePidlMRU" ORDER BY KeyParent,MRUOrder''' % "Info")
+        ui.tableWidget_OpenSavePidlMRU.setHorizontalHeaderLabels(QString("Value;KeyTimeStamp;MFT Number;Source").split(";"))
+        cursor.execute('''SELECT  Value,KeyTimeStamp, MFT, Source FROM %s WHERE Keystr IS "OpenSavePidlMRU" ORDER BY KeyParent,MRUOrder''' % "Info")
         for row1, form in enumerate(cursor):
             for column, item in enumerate(form):
                 #if form[5] == "OpenSavePidlMRU":
@@ -34,7 +34,7 @@ def makeTabs(cursor, tabWidget,tabWidget_RegistrySubTabs, ui ):
                     ui.tableWidget_OpenSavePidlMRU.setItem(row1, column, QTableWidgetItem(str(item).decode('utf8')))
                 else:
                     ui.tableWidget_OpenSavePidlMRU.setItem(row1, column, QTableWidgetItem(str(item)))  
-        ui.tableWidget_OpenSavePidlMRU.resizeColumnsToContents() # fit columns to content
+        ui.tableWidget_OpenSavePidlMRU.horizontalHeader().setResizeMode(QHeaderView.ResizeToContents)
                 #End tab opensavepidlmru
     #Tab  mounted devices
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Mounted Devices"''').fetchone()[0]
@@ -48,7 +48,7 @@ def makeTabs(cursor, tabWidget,tabWidget_RegistrySubTabs, ui ):
             for column, item in enumerate(form):
                 #if form[5] == "Mounted Devices":
                 ui.tableWidget_MountedDevices.setItem(row1, column, QTableWidgetItem(str(item))) 
-        ui.tableWidget_MountedDevices.resizeColumnsToContents()        
+        ui.tableWidget_MountedDevices.horizontalHeader().setResizeMode(QHeaderView.ResizeToContents)  
         #End tab mounted devices
     #Tab TypedPaths
     rowcount = cursor.execute('''SELECT COUNT(Keystr) FROM Info WHERE Keystr IS "Typed Paths"''').fetchone()[0]
@@ -62,7 +62,7 @@ def makeTabs(cursor, tabWidget,tabWidget_RegistrySubTabs, ui ):
             for column, item in enumerate(form):
                 #if form[5] == "Mounted Devices":
                 ui.tableWidget_TypedPaths.setItem(row1, column, QTableWidgetItem(str(item))) 
-        ui.tableWidget_TypedPaths.resizeColumnsToContents
+        ui.tableWidget_TypedPaths.horizontalHeader().setResizeMode(QHeaderView.ResizeToContents)
     #End tab TypedPaths
     #tab_UserAssist
      
@@ -71,10 +71,13 @@ def makeTabs(cursor, tabWidget,tabWidget_RegistrySubTabs, ui ):
         ui.tabWidget.addTab(ui.tab_Registry, "Registry")
         ui.tabWidget_RegistrySubTabs.addTab(ui.tableWidget_UserAssist, "UserAssist")
         ui.tableWidget_UserAssist.setRowCount(rowcount)
-        ui.tableWidget_UserAssist.setHorizontalHeaderLabels(QString("Value;Run Count;Last Run, value, source").split(";"))
+        ui.tableWidget_UserAssist.setHorizontalHeaderLabels(QString("Value;Run Count;Last Run;source").split(";"))
         cursor.execute('''SELECT  Name, RunCount, LastRun, source FROM UserAssistTable''')
         for row1, form in enumerate(cursor):
             for column, item in enumerate(form):
                 ui.tableWidget_UserAssist.setItem(row1, column, QTableWidgetItem(str(item))) 
-        ui.tableWidget_UserAssist.resizeColumnsToContents
-    #End tab_UserAssist
+
+
+        ui.tableWidget_UserAssist.horizontalHeader().setResizeMode(QHeaderView.ResizeToContents)
+ 
+    #End tab_UserAssist   tableResult->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);

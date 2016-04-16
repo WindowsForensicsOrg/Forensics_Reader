@@ -26,7 +26,7 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.resize(1181, 852)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(1)
         sizePolicy.setVerticalStretch(1)
         sizePolicy.setHeightForWidth(Dialog.sizePolicy().hasHeightForWidth())
@@ -163,11 +163,11 @@ class Ui_Dialog(object):
 "    \n"
 "}"))
         self.tableWidget_OpenSavePidlMRU.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        self.tableWidget_OpenSavePidlMRU.setColumnCount(5)
+        self.tableWidget_OpenSavePidlMRU.setColumnCount(6)
         self.tableWidget_OpenSavePidlMRU.setObjectName(_fromUtf8("tableWidget_OpenSavePidlMRU"))
         self.tableWidget_OpenSavePidlMRU.setRowCount(0)
         self.tableWidget_OpenSavePidlMRU.horizontalHeader().setStretchLastSection(True)
-        self.tableWidget_OpenSavePidlMRU.verticalHeader().setStretchLastSection(True)
+        self.tableWidget_OpenSavePidlMRU.verticalHeader().setStretchLastSection(False)
         self.gridLayout_5.addWidget(self.tableWidget_OpenSavePidlMRU, 0, 0, 1, 1)
         self.tabWidget_RegistrySubTabs.addTab(self.tab_OpenSavePidMRU, _fromUtf8(""))
         self.tab_TypedPaths = QtGui.QWidget()
@@ -192,7 +192,7 @@ class Ui_Dialog(object):
         self.tableWidget_TypedPaths.setObjectName(_fromUtf8("tableWidget_TypedPaths"))
         self.tableWidget_TypedPaths.setRowCount(0)
         self.tableWidget_TypedPaths.horizontalHeader().setStretchLastSection(True)
-        self.tableWidget_TypedPaths.verticalHeader().setStretchLastSection(True)
+        self.tableWidget_TypedPaths.verticalHeader().setStretchLastSection(False)
         self.gridLayout_6.addWidget(self.tableWidget_TypedPaths, 0, 0, 1, 1)
         self.tabWidget_RegistrySubTabs.addTab(self.tab_TypedPaths, _fromUtf8(""))
         self.tab_RecentDocs = QtGui.QWidget()
@@ -226,6 +226,11 @@ class Ui_Dialog(object):
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
         self.tableWidget_UserAssist = QtGui.QTableWidget(self.tab_UserAssist)
         self.tableWidget_UserAssist.setEnabled(True)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tableWidget_UserAssist.sizePolicy().hasHeightForWidth())
+        self.tableWidget_UserAssist.setSizePolicy(sizePolicy)
         self.tableWidget_UserAssist.setAutoFillBackground(True)
         self.tableWidget_UserAssist.setStyleSheet(_fromUtf8("QHeaderView::section {\n"
 "    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,\n"
@@ -236,14 +241,14 @@ class Ui_Dialog(object):
 "    border: 1px solid #6c6c6c;\n"
 "    \n"
 "}"))
-        self.tableWidget_UserAssist.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-        self.tableWidget_UserAssist.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        self.tableWidget_UserAssist.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.tableWidget_UserAssist.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.tableWidget_UserAssist.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.tableWidget_UserAssist.setColumnCount(5)
         self.tableWidget_UserAssist.setObjectName(_fromUtf8("tableWidget_UserAssist"))
         self.tableWidget_UserAssist.setRowCount(0)
         self.tableWidget_UserAssist.horizontalHeader().setStretchLastSection(True)
-        self.tableWidget_UserAssist.verticalHeader().setStretchLastSection(True)
+        self.tableWidget_UserAssist.verticalHeader().setStretchLastSection(False)
         self.gridLayout_2.addWidget(self.tableWidget_UserAssist, 0, 0, 1, 1)
         self.tabWidget_RegistrySubTabs.addTab(self.tab_UserAssist, _fromUtf8(""))
         self.gridLayout_4.addWidget(self.tabWidget_RegistrySubTabs, 0, 0, 1, 1)
@@ -427,8 +432,8 @@ class Ui_Dialog(object):
         self.verticalLayout.addWidget(self.splitter)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(2)
-        self.tabWidget_RegistrySubTabs.setCurrentIndex(4)
+        self.tabWidget.setCurrentIndex(8)
+        self.tabWidget_RegistrySubTabs.setCurrentIndex(0)
         QtCore.QObject.connect(self.button_Exit, QtCore.SIGNAL(_fromUtf8("clicked()")), self.button_Exit.click)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 

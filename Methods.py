@@ -115,15 +115,7 @@ def ReadAllReg(db, cursor, Hive, TableName, Source, Category, stateStr, KeyStr):
         print"Error in ReadAllReg"
 
 
-def read(s):
-    Len = 500
-    Filetext = ""
-    k = 0
-    while k < (Len + 1):
-        a = s.Read(1)
-        if a != "0x00":
-            Filetext += a
-    return s
+
 
 def rec(key, cursor, TableName, Category, stateStr, KeyStr,Source):
    
@@ -166,12 +158,6 @@ def rec(key, cursor, TableName, Category, stateStr, KeyStr,Source):
                     [value.name(), filePath, Category, stateStr, KeyStr, "Key",subkey.name(),indexnum, MFT,Source])
     
 
-def str_to_int(s):
-    ctr = i = 0
-    for c in reversed(s):
-        i += (ord(c) - 48) * (10 ** ctr)
-        ctr += 1
-    return i
 
 
 def ReadAllRegSubdir(db, cursor, Hive, TableName, Source, Category, stateStr, KeyStr):
@@ -188,6 +174,21 @@ def ReadAllRegSubdir(db, cursor, Hive, TableName, Source, Category, stateStr, Ke
 
     except Exception,e: print str(e), "Couldn't send to rec (ReadAllRegSubdir)"
 
+def read(s):
+    Len = 500
+    Filetext = ""
+    k = 0
+    while k < (Len + 1):
+        a = s.Read(1)
+        if a != "0x00":
+            Filetext += a
+    return s
+def str_to_int(s):
+    ctr = i = 0
+    for c in reversed(s):
+        i += (ord(c) - 48) * (10 ** ctr)
+        ctr += 1
+    return i
 
 def FiletimeToDateTime(h):
     from filetimes import filetime_to_dt

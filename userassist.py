@@ -37,11 +37,15 @@ def UserAssist(db, cursor, ntuser,software):
                 if len(value.value()) == 72:
                     runcount = struct.unpack("<I", value.value()[4:8])[0]
                     wintimestamp = struct.unpack("<Q", value.value()[60:68])[0]
-                    key = reg.open(userassist).subkey(guid).name()
-                    skey = reg.open(userassist).subkey(guid).subkey("Count").name()
+                   # key = reg.open(userassist).subkey(guid).name()
+                   # skey = reg.open(userassist).subkey(guid).subkey("Count").name()
                     focus_raw = struct.unpack("<2H", value.value()[12:16])[0]
                     focus = float(focus_raw) / 60000
                     lastrun = convert_wintime(wintimestamp)
+                    if str(lastrun) == "1601-01-01 00:00:00":
+                        lastrun = ''
+                    else:
+                        lastrun = lastrun
                     guiddata = codecs.decode(value.name(), 'rot_13')
                     folderdata = guid_to_folder(guiddata)
                     source = "From: {} and registry path: {}".format(ntuser, userassist)

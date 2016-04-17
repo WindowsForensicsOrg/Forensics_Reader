@@ -31,6 +31,7 @@ from Registry import Registry
 from MRUListExSort import MRUListExSort
 from comDlg32 import openSavePidlMRU
 from userassist import *
+from guids import str_to_guid
 
 def ReadSingleReg(db, cursor, Hive, TableName, Source, Key, Category, stateStr, KeyStr):
     reg = Registry.Registry(Hive)
@@ -67,8 +68,6 @@ def ReadAllReg(db, cursor, Hive, TableName, Source, Category, stateStr, KeyStr):
 
             try:
                
-                   
-            
                 if value.name() == "InstallDate":
                     cursor.execute(
                         '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, Source) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
@@ -90,17 +89,20 @@ def ReadAllReg(db, cursor, Hive, TableName, Source, Category, stateStr, KeyStr):
                     '''INSERT INTO %s (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, Source) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
                     [value.name(), str(struct.unpack("<L", value.raw_data())[0]), Category, stateStr, KeyStr, None, None,
                      key.timestamp(), Source])
-
+                elif len(value.value()) == 12 and value.path().find("MountedDevices"):
+                    value1 = value.raw_value() 
+               
                 else:
-                    mountedDevices_unicode = ['5f', '5c']
-                    if value.value()[0].encode('hex') in mountedDevices_unicode:
+                    unicode = ['5f', '5c']
+                    if value.value()[0].encode('hex') in unicode:
+                    #if value.value_type_str() == "RegBin":
                         value1 = value.value().decode('utf16')
                     else:
                        #value1 = value.raw_value() Denne gør man kan se signature + startsector stringen korrekt  value1 = value.raw_value(). Men ikke andet,
                        value1 = value.value() #Der skal laves nogle tjek for om det er ascii eller lignende gejl
-                    cursor.execute(
-                        '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, Source) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
-                        [value.name(), value1, Category, stateStr, KeyStr, None, None, key.timestamp(), Source])
+                cursor.execute(
+                    '''INSERT INTO %s  (Name, Value, Category, State, KeyStr, RecString, KeyParent, KeyTimeStamp, Source) VALUES(?,?,?,?,?,?,?,?,?)''' % TableName,
+                    [value.name(), value1, Category, stateStr, KeyStr, None, None, key.timestamp(), Source])
 
 
 

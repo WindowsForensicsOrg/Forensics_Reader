@@ -163,7 +163,7 @@ class Ui_Dialog(object):
 "    \n"
 "}"))
         self.tableWidget_OpenSavePidlMRU.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        self.tableWidget_OpenSavePidlMRU.setColumnCount(6)
+        self.tableWidget_OpenSavePidlMRU.setColumnCount(7)
         self.tableWidget_OpenSavePidlMRU.setObjectName(_fromUtf8("tableWidget_OpenSavePidlMRU"))
         self.tableWidget_OpenSavePidlMRU.setRowCount(0)
         self.tableWidget_OpenSavePidlMRU.horizontalHeader().setStretchLastSection(True)
@@ -432,8 +432,8 @@ class Ui_Dialog(object):
         self.verticalLayout.addWidget(self.splitter)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(8)
-        self.tabWidget_RegistrySubTabs.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget_RegistrySubTabs.setCurrentIndex(1)
         QtCore.QObject.connect(self.button_Exit, QtCore.SIGNAL(_fromUtf8("clicked()")), self.button_Exit.click)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 

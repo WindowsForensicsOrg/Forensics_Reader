@@ -13,10 +13,12 @@ def UserAssist(db, cursor, ntuser,software):
 
     for subkey in folderDescription.subkeys():
         guid = subkey.name().upper()
-        for value in subkey.values():
+        name = ''
+        for value in subkey.values():        
             if value.name() == 'Name':
                 folderDescription_dict[guid] = value.value()
-
+                
+               # print value.name(), value.value(), guid
 
     reg = Registry.Registry(ntuser)
     userassist = 'Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist'
@@ -27,7 +29,7 @@ def UserAssist(db, cursor, ntuser,software):
     top = reg.open(userassist)
     for subkeyGuid in top.subkeys():
         userassist_subKeyGuids.append(subkeyGuid.name())
-
+   
 
     entries = []
         
@@ -47,7 +49,7 @@ def UserAssist(db, cursor, ntuser,software):
                     else:
                         lastrun = lastrun
                     guiddata = codecs.decode(value.name(), 'rot_13')
-                    folderdata = guid_to_folder(guiddata)
+                    folderdata = guid_to_folder(guiddata, folderDescription_dict)
                     source = "From: {} and registry path: {}".format(ntuser, userassist)
                     cursor.execute(
                             '''INSERT INTO %s  (Name, Runcount, Lastrun, Folderdata, Focus, Source) VALUES(?,?,?,?,?,?)''' % "UserAssistTable",
@@ -62,22 +64,14 @@ def convert_wintime(windate):
         first_run = datetime(1601,1,1) + timedelta(microseconds=us)
         return first_run
 
-def guid_to_folder(data):
-    try:
-        if data[:38] in folderDescription_dict:
-            guid = data[:38]
-            data = folderDescription_dict[guid] + ':\t' + data[39:]
-            return data
-        else:
-            return data
-    except:
+def guid_to_folder(data, folderDescription_dict):
+   
+       
+    string = data[:38]
+        
+    if string in folderDescription_dict:    
+        guid = data[:38]
+        data1 = "<" + folderDescription_dict[string] + '>\\' + data[39:]
+        return data1
+    else:
         return data
-
- 
-           
-                         
-
-            
-
-
-           

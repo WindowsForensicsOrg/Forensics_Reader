@@ -72,7 +72,7 @@ def makeTabs(cursor, tabWidget,tabWidget_RegistrySubTabs, ui ):
         ui.tabWidget_RegistrySubTabs.addTab(ui.tableWidget_UserAssist, "UserAssist")
         ui.tableWidget_UserAssist.setRowCount(rowcount)
         ui.tableWidget_UserAssist.setHorizontalHeaderLabels(QString("Value;Run Count;Last Run;source").split(";"))
-        cursor.execute('''SELECT  Name, RunCount, LastRun, source FROM UserAssistTable''')
+        cursor.execute('''SELECT  FolderData, RunCount, LastRun, source FROM UserAssistTable''')
         for row1, form in enumerate(cursor):
             for column, item in enumerate(form):
                 ui.tableWidget_UserAssist.setItem(row1, column, QTableWidgetItem(str(item))) 

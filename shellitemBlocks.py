@@ -47,4 +47,15 @@ def dirnameascii(dirblock):
         beefblock = dirblock[beefstart:]
         beefparsed = parsebeefblock(beefblock)
         dirattr['\tDirectoryUnicodeName:\t'] = beefparsed[0]
+        return dirattr
+    else:
+        return dirname
+
+def cfsf(cfsfblock):
+    dirattr= {}
+    beefsigoffset = cfsfblock.find('EFBE'.decode('hex'))
+    beefstart = beefsigoffset - 6
+    beefblock = cfsfblock[beefstart:]
+    beefparsed = parsebeefblock(beefblock)
+    dirattr['\tDirectoryUnicodeName:\t'] = beefparsed[0]
     return dirattr

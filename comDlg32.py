@@ -44,6 +44,11 @@ def openSavePidlMRU(value, subkeyName):
             filePath = path.join(filePath, fileName)
             mft = attr['MFTEntry']
 
+        elif blocktype == '74':
+            attr = cfsf(value.value()[blockstart:blockstart + blocklength])
+            for k, v in attr.iteritems():
+                filePath = path.join(filePath, v)
+
             
         blockstart = blockstart + blocklength
 
